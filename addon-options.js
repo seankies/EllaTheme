@@ -25,9 +25,10 @@
     if (!productForms || productForms.length === 0) return;
     
     productForms.forEach(function(form) {
-      // Remove any existing listeners
-      form.removeEventListener('submit', handleFormSubmit);
-      // Add new listener
+      // Check if already initialized to prevent duplicate listeners
+      if (form.dataset.addonOptionsInitialized === 'true') return;
+      
+      form.dataset.addonOptionsInitialized = 'true';
       form.addEventListener('submit', handleFormSubmit);
     });
   }
@@ -130,7 +131,19 @@
         })
         .catch(function(err) {
           console.error('[Addon Options] Error adding to cart:', err);
-          alert('Sorry, there was an error adding items to your cart. Please try again.');
+          
+          // Show user-friendly error message
+          const errorMsg = 'Sorry, there was an error adding items to your cart. Please try again.';
+          
+          // Try to use theme's notification system if available
+          if (typeof window.showNotification === 'function') {
+            window.showNotification(errorMsg, 'error');
+          } else if (typeof window.Shopify !== 'undefined' && typeof window.Shopify.showNotification === 'function') {
+            window.Shopify.showNotification(errorMsg, 'error');
+          } else {
+            // Fallback to alert only if no notification system exists
+            alert(errorMsg);
+          }
           
           // Re-enable buttons
           submitBtns.forEach((btn, idx) => {

@@ -45,12 +45,8 @@
           {%- if show_price == nil -%}{%- assign show_price = true -%}{%- endif -%}
           {%- assign hide_if_soldout = block.settings[hide_soldout_key] -%}
           
-          {%- comment -%} Get the addon product {%- endcomment -%}
-          {%- if addon_product.id -%}
-            {%- assign addon = addon_product -%}
-          {%- else -%}
-            {%- assign addon = all_products[addon_product] -%}
-          {%- endif -%}
+          {%- comment -%} Product picker returns product object directly {%- endcomment -%}
+          {%- assign addon = addon_product -%}
           
           {%- if addon and addon.id -%}
             {%- comment -%} Determine which variant to use {%- endcomment -%}
