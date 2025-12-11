@@ -51,7 +51,7 @@
           {%- if addon and addon.id -%}
             {%- comment -%} Determine which variant to use {%- endcomment -%}
             {%- if variant_id_setting != blank and variant_id_setting != '0' -%}
-              {%- assign variant_id_int = variant_id_setting | plus: 0 -%}
+              {%- assign variant_id_int = variant_id_setting | times: 1 -%}
               {%- assign addon_variant = nil -%}
               {%- for variant in addon.variants -%}
                 {%- if variant.id == variant_id_int -%}

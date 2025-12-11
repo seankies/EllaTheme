@@ -137,11 +137,10 @@
           
           // Try to use theme's notification system if available
           if (typeof window.showNotification === 'function') {
+            // Custom theme notification function
             window.showNotification(errorMsg, 'error');
-          } else if (typeof window.Shopify !== 'undefined' && typeof window.Shopify.showNotification === 'function') {
-            window.Shopify.showNotification(errorMsg, 'error');
           } else {
-            // Fallback to alert only if no notification system exists
+            // Fallback to browser alert
             alert(errorMsg);
           }
           
