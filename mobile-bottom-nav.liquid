@@ -1,0 +1,144 @@
+<div class="mobile-bottom-nav" style="background-color: {{ section.settings.background_color }}; color: {{ section.settings.icon_text_color }};">
+  {% for block in section.blocks %}
+    {% assign icon = block.settings.icon %}
+    <a href="{{ block.settings.link | default: '#' }}" class="nav-item">
+      {% if icon == "home" %}
+        <svg class="icon" fill="#000000" width="800px" height="800px" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M192,1.42108547e-14 L384,153.6 L384,384 L213.333333,384 L213.333333,277.333333 L170.666667,277.333333 L170.666667,384 L1.42108547e-14,384 L1.42108547e-14,153.6 L192,1.42108547e-14 Z M192,53.3333333 L42.6666667,170.666667 L42.6666667,341.333333 L128,341.333333 L128,234.666667 L256,234.666667 L256,341.333333 L341.333333,341.333333 L341.333333,170.666667 L192,53.3333333 Z" transform="translate(64 64)"/></svg>
+      {% elsif icon == "shop" %}
+          <svg class="icon" width="800px" height="800px" viewBox="0 0 64 64" id="icons" xmlns="http://www.w3.org/2000/svg" fill="#000000">
+            <g id="SVGRepo_bgCarrier" stroke-width="0"/>
+            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
+            <g id="SVGRepo_iconCarrier">
+            <defs>
+            </defs>
+            <title/>
+            <path d="M55,7H32a2,2,0,0,0-1.41.59l-26,26a2,2,0,0,0,0,2.82l23,23a2,2,0,0,0,2.82,0l26-26A2,2,0,0,0,57,32V9A2,2,0,0,0,55,7ZM53,31.17l-24,24L8.83,35l24-24H53Z"/>
+            <circle cx="45.5" cy="18.5" r="3.5"/>
+            </g>
+          </svg>
+      {% elsif icon == "cart" %}
+        <svg class="icon" fill="#000000" height="800px" width="800px" version="1.1" id="XMLID_269_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+          viewBox="0 0 24 24" xml:space="preserve">
+        <g id="shop-cart">
+          <g>
+            <circle cx="9" cy="21" r="2"/>
+          </g>
+          <g>
+            <circle cx="19" cy="21" r="2"/>
+          </g>
+          <g>
+            <path d="M21,18H7.2l-4-16H0V0h4.8l0.8,3H24l-3.2,11H8.3l0.5,2H21V18z M7.8,12h11.5l2-7H6L7.8,12z"/>
+          </g>
+        </g>
+        </svg>
+      {% endif %}
+      {% if section.settings.show_labels %}
+        <span>{{ block.settings.label }}</span>
+      {% endif %}
+    </a>
+  {% endfor %}
+</div>
+
+<style>
+.mobile-bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    padding: 10px 0;
+    z-index: 10000;
+    box-shadow: 0 -1px 5px rgba(0,0,0,0.1);
+}
+
+.mobile-bottom-nav .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    font-size: 12px;
+    color: inherit;
+    text-decoration: none;
+}
+
+.mobile-bottom-nav .icon {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 4px;
+}
+
+@media (min-width: 769px) {
+    .mobile-bottom-nav {
+        display: none;
+    }
+}
+</style>
+
+{% schema %}
+{
+  "name": "Mobile Bottom Nav",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_labels",
+      "label": "Show text labels under icons",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "icon_text_color",
+      "label": "Icon and text color",
+      "default": "#333333"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "nav_item",
+      "name": "Nav Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Home"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link",
+          "default": "/"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "default": "home",
+          "options": [
+            { "value": "home", "label": "Home" },
+            { "value": "shop", "label": "Shop" },
+            { "value": "cart", "label": "Cart" }
+          ]
+        }
+      ]
+    }
+  ],
+  "max_blocks": 5,
+  "presets": [
+    {
+      "name": "Mobile Bottom Nav",
+      "blocks": [
+        { "type": "nav_item", "settings": { "label": "Home", "link": "/", "icon": "home" } },
+        { "type": "nav_item", "settings": { "label": "Shop", "link": "/collections/all-products-in-store", "icon": "shop" } },
+        { "type": "nav_item", "settings": { "label": "Cart", "link": "/cart", "icon": "cart" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

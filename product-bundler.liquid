@@ -1,0 +1,537 @@
+<link rel="stylesheet" href="{{ 'bundler.css' | asset_url }}">
+
+<style>
+  /* Mobile & Tablet (max-width 1024px) - Same stacked layout */
+  @media (max-width: 1024px) {
+    .bundler-layout {
+      flex-direction: column !important;
+    }
+    .bundler-sidebar {
+      display: block !important;
+      width: 100% !important;
+      margin-top: 20px !important;
+    }
+
+    /* Mobile tier styling */
+    .tier {
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: var(--space-12) !important;
+      padding: var(--space-16) !important;
+    }
+
+    /* Tier header with info and remove button side-by-side */
+    .tier > div:first-child {
+      width: 100%;
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: flex-start !important;
+      gap: var(--space-12) !important;
+    }
+
+    .tier-min {
+      margin-bottom: var(--space-4);
+    }
+
+    .tier-off {
+      margin: 0 !important;
+    }
+
+    /* Move remove button to header */
+    .tier-remove {
+      width: auto;
+      padding: var(--space-8) var(--space-12) !important;
+      min-width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .tier-controls {
+      width: 100%;
+      display: flex;
+      gap: var(--space-8);
+    }
+
+    .tier-btn {
+      flex: 1;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: var(--space-12) var(--space-16) !important;
+    }
+
+    .tier-applied-badge {
+      font-weight: var(--font-weight-bold);
+      text-align: center;
+      padding: var(--space-8) 0;
+      color: var(--color-primary);
+    }
+  }
+</style>
+
+<div class="bundler">
+  <div class="bundler-wrapper">
+    <div class="bundler-header">
+      <h1 class="bundler-title">{{ section.settings.title }}</h1>
+      <p class="bundler-desc">{{ section.settings.description }}</p>
+    </div>
+
+    <div class="bundler-layout">
+      <div class="bundler-products">
+        {% if section.settings.product_selection_type == 'collection' %}
+          {% if section.settings.product_collection != blank %}
+            {% assign collection = collections[section.settings.product_collection] %}
+            {% if collection and collection.products.size > 0 %}
+              <div class="grid">
+                {% for product in collection.products %}
+                  {% assign excluded_products = section.settings.excluded_products %}
+                  {% assign is_excluded = false %}
+                  {% for excluded in excluded_products %}
+                    {% if excluded.id == product.id %}
+                      {% assign is_excluded = true %}
+                      {% break %}
+                    {% endif %}
+                  {% endfor %}
+                  <div class="card" onclick="bundler.toggle(this)" data-variant-id="{{ product.variants[0].id }}" data-name="{{ product.title }}" data-price="{{ product.price }}" data-exclude-discount="{{ is_excluded }}">
+                    {% if is_excluded %}
+                      <div class="exclude-tag">{{ section.settings.exclude_tag_text }}</div>
+                    {% endif %}
+                    <div class="card-img">
+                      {% if product.featured_image %}
+                        <img src="{{ product.featured_image | image_url: width: 300 }}" alt="{{ product.title }}" width="300" height="300" loading="lazy">
+                      {% endif %}
+                      <button class="check" type="button">✓</button>
+                    </div>
+                    <div class="card-text">
+                      <h3>{{ product.title }}</h3>
+                      <p>${{ product.price | divided_by: 100 | round: 2 }}</p>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            {% else %}
+              <p class="empty">Collection is empty</p>
+            {% endif %}
+          {% else %}
+            <p class="empty">Select a collection in Theme Editor</p>
+          {% endif %}
+
+        {% elsif section.settings.product_selection_type == 'specific' %}
+          {% if section.settings.selected_products.size > 0 %}
+            <div class="grid">
+              {% for product in section.settings.selected_products %}
+                {% assign excluded_products = section.settings.excluded_products %}
+                {% assign is_excluded = false %}
+                {% for excluded in excluded_products %}
+                  {% if excluded.id == product.id %}
+                    {% assign is_excluded = true %}
+                    {% break %}
+                  {% endif %}
+                {% endfor %}
+                <div class="card" onclick="bundler.toggle(this)" data-variant-id="{{ product.variants[0].id }}" data-name="{{ product.title }}" data-price="{{ product.price }}" data-exclude-discount="{{ is_excluded }}">
+                  {% if is_excluded %}
+                    <div class="exclude-tag">{{ section.settings.exclude_tag_text }}</div>
+                  {% endif %}
+                  <div class="card-img">
+                    {% if product.featured_image %}
+                      <img src="{{ product.featured_image | image_url: width: 300 }}" alt="{{ product.title }}" width="300" height="300" loading="lazy">
+                    {% endif %}
+                    <button class="check" type="button">✓</button>
+                  </div>
+                  <div class="card-text">
+                    <h3>{{ product.title }}</h3>
+                    <p>${{ product.price | divided_by: 100 | round: 2 }}</p>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="empty">Select products in Theme Editor</p>
+          {% endif %}
+        {% endif %}
+      </div>
+
+      <div class="bundler-sidebar">
+        <div class="sidebar-box">
+          <h2>Your Bundle</h2>
+          <div class="count"><span id="count">0</span> items</div>
+
+          <div class="items" id="items">
+            <p class="no-items">Select products</p>
+          </div>
+
+          <div class="tiers">
+            <h3>Discounts</h3>
+            {% for block in section.blocks %}
+              {% if block.type == 'discount_tier' %}
+                <div class="tier" data-min="{{ block.settings.min_quantity }}" data-discount="{{ block.settings.discount_amount }}" data-type="{{ block.settings.discount_type }}" data-code="{{ block.settings.discount_code }}" data-tier-text="{{ block.settings.tier_text }}" data-progress-text="{{ block.settings.progress_text }}">
+                  <div>
+                    <div>
+                      <div class="tier-min">{{ block.settings.tier_text }}</div>
+                      <div class="tier-off">{{ block.settings.discount_amount }}{% if block.settings.discount_type == 'percent' %}%{% else %}${% endif %} off</div>
+                    </div>
+                    <button class="tier-remove" onclick="bundler.removeTier()" type="button" style="display: none;">✕</button>
+                  </div>
+                  <div class="tier-controls">
+                    <button class="tier-btn" onclick="bundler.applyTier(this)" type="button" disabled>Apply</button>
+                  </div>
+                  <div class="tier-applied-badge" style="display: none;">Discount Added</div>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+
+          <div class="next" id="next" style="display: none;"></div>
+
+          <div class="totals">
+            <div class="total-row">
+              <span>Subtotal</span>
+              <span id="sub">$0.00</span>
+            </div>
+            <div class="total-row disc" style="display: none;">
+              <span>Discount</span>
+              <span id="disc">-$0.00</span>
+            </div>
+            <div class="total-row final">
+              <span>Total</span>
+              <span id="total">$0.00</span>
+            </div>
+          </div>
+
+          <button class="add-cart" id="add-btn" onclick="bundler.addCart()" type="button">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const bundler = {
+    selected: new Map(),
+    discounts: [],
+    activeTier: null,
+
+    init() {
+      this.discounts = Array.from(document.querySelectorAll('.tier')).map(t => ({
+        min: parseInt(t.dataset.min),
+        discount: parseInt(t.dataset.discount),
+        type: t.dataset.type,
+        code: t.dataset.code,
+        tierText: t.dataset.tierText,
+        progressText: t.dataset.progressText,
+        el: t
+      }));
+      this.discounts.sort((a,b) => a.min - b.min);
+      this.render();
+    },
+
+    toggle(card) {
+      const variantId = card.dataset.variantId;
+      if (this.selected.has(variantId)) {
+        this.selected.delete(variantId);
+        card.classList.remove('active');
+      } else {
+        const excludeDiscount = card.getAttribute('data-exclude-discount') === 'true';
+        this.selected.set(variantId, {
+          variantId,
+          name: card.dataset.name,
+          price: parseFloat(card.dataset.price),
+          excludeDiscount: excludeDiscount
+        });
+        card.classList.add('active');
+      }
+      this.render();
+    },
+
+    render() {
+      const count = this.selected.size;
+      document.getElementById('count').textContent = count;
+
+      const itemsEl = document.getElementById('items');
+      if (count === 0) {
+        itemsEl.innerHTML = '<p class="no-items">Select products</p>';
+      } else {
+        let html = '';
+        this.selected.forEach(item => {
+          const price = (item.price / 100).toFixed(2);
+          html += `<div class="item"><span>${item.name}</span><span>$${price}</span></div>`;
+        });
+        itemsEl.innerHTML = html;
+      }
+
+      let subtotal = 0;
+      this.selected.forEach(item => {
+        subtotal += item.price / 100;
+      });
+
+      let discount = 0;
+      if (this.activeTier) {
+        const discountableProducts = Array.from(this.selected.values()).filter(p => !p.excludeDiscount);
+        let discountableAmount = 0;
+        discountableProducts.forEach(p => {
+          discountableAmount += p.price / 100;
+        });
+
+        if (this.activeTier.type === 'percent') {
+          discount = (discountableAmount * this.activeTier.discount) / 100;
+        } else {
+          discount = this.activeTier.discount;
+        }
+      }
+
+      const total = subtotal - discount;
+
+      document.getElementById('sub').textContent = '$' + subtotal.toFixed(2);
+      document.getElementById('total').textContent = '$' + total.toFixed(2);
+
+      const discRow = document.querySelector('.disc');
+      if (discount > 0) {
+        document.getElementById('disc').textContent = '-$' + discount.toFixed(2);
+        discRow.style.display = 'flex';
+      } else {
+        discRow.style.display = 'none';
+      }
+
+      this.discounts.forEach(d => {
+        const btn = d.el.querySelector('.tier-btn');
+        const removeBtn = d.el.querySelector('.tier-remove');
+        const badge = d.el.querySelector('.tier-applied-badge');
+        const isApplied = this.activeTier && this.activeTier.min === d.min;
+
+        if (isApplied) {
+          btn.style.display = 'none';
+          removeBtn.style.display = 'flex';
+          badge.style.display = 'block';
+          d.el.classList.add('tier-applied');
+          d.el.classList.add('unlocked');
+        } else {
+          btn.style.display = 'block';
+          removeBtn.style.display = 'none';
+          badge.style.display = 'none';
+          d.el.classList.remove('tier-applied');
+          if (count >= d.min) {
+            d.el.classList.add('unlocked');
+            btn.disabled = false;
+          } else {
+            d.el.classList.remove('unlocked');
+            btn.disabled = true;
+          }
+        }
+      });
+
+      const nextEl = document.getElementById('next');
+      if (count === 0) {
+        nextEl.textContent = '';
+        nextEl.style.display = 'none';
+      } else {
+        const next = this.discounts.find(d => d.min > count);
+        if (next && next.progressText) {
+          nextEl.textContent = next.progressText;
+          nextEl.style.display = 'block';
+        } else if (!next && this.discounts.length > 0) {
+          nextEl.textContent = '✓ Best deal!';
+          nextEl.style.display = 'block';
+        } else {
+          nextEl.textContent = '';
+          nextEl.style.display = 'none';
+        }
+      }
+
+      document.getElementById('add-btn').disabled = count === 0;
+    },
+
+    applyTier(btn) {
+      const tier = btn.closest('.tier');
+      const min = parseInt(tier.dataset.min);
+      if (this.selected.size < min) {
+        alert(`Add ${min - this.selected.size} more items`);
+        return;
+      }
+      this.activeTier = this.discounts.find(d => d.min === min);
+      this.render();
+    },
+
+    removeTier() {
+      this.activeTier = null;
+      this.render();
+    },
+
+    addCart() {
+      if (this.selected.size === 0) return;
+      
+      document.getElementById('add-btn').disabled = true;
+      document.getElementById('add-btn').textContent = 'Adding...';
+
+      const items = Array.from(this.selected.values()).map(item => ({
+        id: parseInt(item.variantId),
+        quantity: 1
+      }));
+
+      const discountCode = this.activeTier ? this.activeTier.code : null;
+
+      fetch(window.Shopify.routes.root + 'cart/add.json', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({ items: items })
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Products added to cart');
+        document.getElementById('add-btn').textContent = '✓ Added!';
+        
+        setTimeout(() => {
+          if (discountCode && discountCode.trim() !== '') {
+            window.location.href = window.Shopify.routes.root + 'checkout?discount=' + encodeURIComponent(discountCode);
+          } else {
+            window.location.href = window.Shopify.routes.root + 'cart';
+          }
+        }, 500);
+      })
+      .catch(error => {
+        console.error('Error adding to cart:', error);
+        document.getElementById('add-btn').disabled = false;
+        document.getElementById('add-btn').textContent = 'Add to Cart';
+        alert('Error adding to cart. Please try again.');
+      });
+    }
+  };
+
+  bundler.init();
+</script>
+
+{% schema %}
+{
+  "name": "Product Bundler",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Build Your Bundle"
+    },
+    {
+      "type": "text",
+      "id": "description",
+      "label": "Description",
+      "default": "Mix and match to save"
+    },
+    {
+      "type": "text",
+      "id": "exclude_tag_text",
+      "label": "Exclude tag text",
+      "default": "No Discount Available",
+      "info": "Text shown on products excluded from discounts"
+    },
+    {
+      "type": "select",
+      "id": "product_selection_type",
+      "label": "Selection Type",
+      "options": [
+        {
+          "value": "collection",
+          "label": "Collection"
+        },
+        {
+          "value": "specific",
+          "label": "Specific Products"
+        }
+      ],
+      "default": "collection"
+    },
+    {
+      "type": "collection",
+      "id": "product_collection",
+      "label": "Collection"
+    },
+    {
+      "type": "product_list",
+      "id": "selected_products",
+      "label": "Products"
+    },
+    {
+      "type": "product_list",
+      "id": "excluded_products",
+      "label": "Exclude from discount",
+      "info": "Select products that should NOT get the discount (full price items)"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "discount_tier",
+      "name": "Discount Tier",
+      "settings": [
+        {
+          "type": "range",
+          "id": "min_quantity",
+          "label": "Minimum Items",
+          "min": 2,
+          "max": 10,
+          "step": 1,
+          "default": 2
+        },
+        {
+          "type": "text",
+          "id": "tier_text",
+          "label": "Tier Display Text",
+          "default": "Add 2 items",
+          "info": "Custom text to display for this tier (e.g., 'Buy 2 items', 'Select 3+ products')"
+        },
+        {
+          "type": "text",
+          "id": "progress_text",
+          "label": "Progress Text",
+          "default": "Add 2 items",
+          "info": "Text shown below the discount section to encourage adding more items"
+        },
+        {
+          "type": "range",
+          "id": "discount_amount",
+          "label": "Discount Amount",
+          "min": 1,
+          "max": 100,
+          "step": 1,
+          "default": 10
+        },
+        {
+          "type": "select",
+          "id": "discount_type",
+          "label": "Discount Type",
+          "options": [
+            {
+              "value": "percent",
+              "label": "Percentage"
+            },
+            {
+              "value": "fixed",
+              "label": "Fixed Amount"
+            }
+          ],
+          "default": "percent"
+        },
+        {
+          "type": "text",
+          "id": "discount_code",
+          "label": "Discount Code",
+          "placeholder": "e.g., SAVE10",
+          "info": "Discount code to apply at checkout"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Bundler"
+    }
+  ]
+}
+{% endschema %}

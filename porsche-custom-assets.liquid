@@ -1,0 +1,50 @@
+{% comment %}
+  This section injects custom JS/CSS on /pages/porsche only.
+  You can include it in a page template.
+{% endcomment %}
+
+{% if request.path == '/pages/porsche' or request.path == '/collections/porsche-95b-macan' or request.path == '/collections/991-2-carrera-911' or request.path == '/products/996-986-porsche-carbon-fiber-mirrors' or request.path == '/products/991-2-718-carbon-fiber-arm-rest' %}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&display=swap');
+
+* {
+  font-family: "Jost", sans-serif !important;
+  font-optical-sizing: auto !important;
+}
+
+/* Custom styles for Porsche page */
+.announcement-bar__message,
+.announcement-bar__message .message,
+.announcement-bar__message a,
+.announcement-bar__message p,
+.top-mesage-countdown,
+.menu-lv-1:last-child .text {
+    color: #aa71d8 !important;
+}
+
+.footer-block__newsletter .newsletter-form__button {
+    border: 1px solid #aa71d8 !important;
+    background-color: #aa71d8 !important;
+}
+
+.footer__content-bottom {
+    border-top: 1px solid #aa71d8 !important;
+}
+</style>
+
+<script>
+
+</script>
+{% endif %}
+
+{% schema %}
+{
+    "name": "Custom Porsche JS/CSS",
+    "settings": [],
+    "presets": [
+        {
+        "name": "Custom Porsche JS/CSS"
+        }
+    ]
+}
+{% endschema %}
