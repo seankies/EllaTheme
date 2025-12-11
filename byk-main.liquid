@@ -1,0 +1,1812 @@
+<div class="byk_main">
+    {% render 'close-modal' %}
+        {% if section.settings.button_label != blank %}
+        <div>
+            <button id="openModal" class="product-form__submit button button--primary">{{ section.settings.button_label }}</button>
+        </div>
+        {% endif %}
+        
+    <div class="modal">
+        <div style="display:block;" class="modal-overlay"></div>
+        <div class="modal-wrapper modal-transition">
+        <div class="modal-header">
+            <button class="modal-close modal-toggle"><svg class="icon-close icon" viewBox="0 0 32 32"><use xlink:href="#icon-close"></use></svg></button>
+            <h2 class="modal-heading">BMW & Porsche Oil Change Specifications</h2>
+        </div>
+        
+        <div class="modal-body">
+            <div class="modal-content">
+                <div class="halo-text-format">
+                    <div class="main_accordion_container">
+                    <div class="heading_accordion_bmw">
+                        BMW Oil Change Specifications
+                    </div>
+                    <div class="accordion_content_bmw">
+                        {% for engine in page.metafields.custom.bmw_oil_change_specifications.value %}
+                            {% assign engine_oil = engine.engine_oil | strip %}
+                            <details class="accordion_item">
+                                <summary class="accordion_head">{{ engine.name }} ({{ engine.years }})</summary>
+                                <div class="byk_product_modal" id="modal_{{ engine.id }}">
+                                <div style="display: block;" class="modal-overlay_modal"></div>
+                                <div style="background:#fff" class="byk_product_modal_wrapper">
+                                    <div class="modal-header_modal">
+                                        <button class="modal-close modal-toggles" data-modal-id="{{ engine.id }}" >
+                                            <svg class="icon-close icon" viewBox="0 0 32 32"><use xlink:href="#icon-close"></use></svg>
+                                        </button>
+                                    </div>
+
+                                    {% for product in section.settings.product_list_modal %}
+                                        <div class="bundle_item_modal {% if product.available == false %}product_out_of_stock{% endif %}">
+                                            <div class="bundle_item_container">
+                                            <div class="bundle_check">
+                                                <input 
+                                                    data-variant-modalqty="1" 
+                                                    {% if product.available == false %} disabled {% endif %}
+                                                    {% if product.available == true %} data-qty="bundle_variant_qty-{{ forloop.index }}" {% endif %} 
+                                                    {% if product.available == true %}
+                                                        data-checkoption="checkbox_option_bundle_modal_{{ forloop.index  }}_{{ engine.id }}_quantity" 
+                                                        data-dropdown="bundle_variant_select-{{ forloop.index }}"
+                                                    {% endif %} 
+                                                    type="checkbox" 
+                                                    {% for bundle_variant in product.variants %}
+                                                        {% assign variant_title = bundle_variant.title | strip %}
+                                                        {% if variant_title == engine_oil %}
+                                                        value="{{ bundle_variant.id }}"
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    style="display:block !important;" 
+                                                    class="bundle_checkbox_optionBYK_modal checkbox_option_bundle-modal-{{ forloop.index }}_{{ engine.id }} {% if product.variants.size > 1 %}have_variant{% endif %}"  
+                                                />
+                                            </div>
+
+                                            <div class="bundle_product_image">
+                                                <img class="bundle_image" src="{{ product.featured_media | img_url: '100x100'}}"/>
+                                            </div>
+
+                                            <div class="bundle_content " >
+                                                <label for="checkbox_option_bundle-{{ forloop.index }}">
+                                                    <div class="bundle_title">
+                                                        <p class="bundle_product_title" style="margin:0">{{ product.title }}</p>
+                                                        <span class="preview_price-{{ forloop.index }}_{{ engine.id }}">
+                                                        {% for bundle_variant in product.variants %}
+                                                            {% assign variant_title = bundle_variant.title | strip %}
+                                                            {% if variant_title == engine_oil %}
+                                                                {{ bundle_variant.price |  money }}
+                                                            {% endif %}
+                                                        {% endfor %}   
+                                                        </span>
+                                                    </div>
+                                                </label>
+                                                {{engine_oil}}
+                                            </div>
+                                            </div>
+                                        
+                                            <div class="quantity_bundle">
+                                            <div class="quantity_selector">
+                                                {% render 'product-quantity-variant-modal',
+                                                    id_field: forloop.index ,
+                                                    modal_id: engine.id,
+                                                    current_variant: product.selected_or_first_available_variant.id ,
+                                                    qty_style: '1',
+                                                    quantity_label: product.metafields.custom.quantity_label,
+                                                    current_price: product.selected_or_first_available_variant.price,
+                                                    check_hidden: false,
+                                                    quantity_stt: 2
+                                                %}
+                                            </div> 
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+
+                                    <div class="modal-header_modal">
+                                        <button type="button" class="byk_add_btn_modal_btn product-form__submit button button--primary">
+                                            ADD ITEMS TO CART
+                                        </button>
+                                    </div>
+                                </div>
+                                </div>
+
+                                <div class="ac_content">
+                                <table border="1">
+                                    <tbody>
+                                        <tr>
+                                            <th>Year</th>
+                                            <th>Engine Oil</th>
+                                            <th>Capacity</th>
+                                            <th>Oil Filter</th>
+                                        </tr>
+                                        <tr>
+                                            <td>({{ engine.years }})</td>
+                                            <td class="engine_oil_container">{{ engine.engine_oil }} 
+                                            <button type="button" class="open_modal_cart " data-modal-id="{{ engine.id }}" >
+                                                {% render 'cart-icon' %}
+                                            </button>
+                                            </td>
+                                            <td>{{ engine.capacity }}</td>
+                                            <td class="oil_filter_container" >
+                                            {{ engine.oil_filter }}  
+                                            <button type="button" 
+                                                {% for product_item in section.settings.product_oil_filter %}
+                                                    {% for variant_item in product_item.variants  %}
+                                                        {% if variant_item.title == engine.oil_filter %}
+                                                        {%  assign variant_item_id = variant_item.id%} 
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endfor %}
+                                                    data-filter-variant="{{variant_item_id}}" class="open_modal_cart_filter"  data-modal-id="{{ engine.id }}_{{ forloop.index }}" >
+                                                {% render 'cart-icon' %}
+                                            </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                </div>
+
+                                <div class="ac_content_mobile">
+                                <table border="1">
+                                    <tr>
+                                        <th>Year</th>
+                                        <td>{{ engine.years }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Engine Oil</th>
+                                        <td class="engine_oil_container">{{ engine.engine_oil }} 
+                                            <button type="button" class="open_modal_cart " data-modal-id="{{ engine.id }}" >
+                                            {% render 'cart-icon' %}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Capacity</th>  
+                                        <td>{{ engine.capacity }} </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Oil Filter</th>  
+                                        <td class="oil_filter_container">{{ engine.oil_filter }}  
+                                            <button type="button" 
+                                            {% for product_item in section.settings.product_oil_filter %}
+                                                {% for variant_item in product_item.variants  %}
+                                                    {% if variant_item.title == engine.oil_filter %}
+                                                        {%  assign variant_item_id = variant_item.id%} 
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endfor %}
+                                            data-filter-variant="{{variant_item_id}}" class="open_modal_cart_filter"  data-modal-id="{{ engine.id }}_{{ forloop.index }}" >
+                                            {% render 'cart-icon' %}
+                                            </button> 
+                                        </td>
+                                    </tr>
+                                </table>
+                                </div>
+                            </details>
+                        {% endfor %}
+                    </div>
+                    </div>
+
+                    <div class="main_accordion_container">
+                    <div class="heading_accordion">
+                        Porsche Oil Change Specifications
+                    </div>
+                    <div class="accordion_content">
+                        <h2>PORSCHE Macan 95B Oil Kit Specs</h2>
+                        {% for engine in page.metafields.custom.porsche_macan_95b_oil_kit_specs.value %}
+                            {% assign engine_oil_macan = engine.engine_oil | strip  %}
+                            <details class="accordion_item">
+                                <summary class="accordion_head">{{ engine.name }} ({{ engine.years }})</summary>
+                                <div class="byk_product_modal" id="modal_{{ engine.id }}">
+                                <div style="display: block;" class="modal-overlay_modal"></div>
+                                <div  style="background:#fff" class="byk_product_modal_wrapper">
+                                    <div class="modal-header_modal">
+                                        <button class="modal-close modal-toggles"  data-modal-id="{{ engine.id }}" ><svg class="icon-close icon" viewBox="0 0 32 32"><use xlink:href="#icon-close"></use></svg></button>
+                                    </div>
+                                    {% for product in section.settings.product_list_modal %}
+                                        <div class="bundle_item_modal {% if product.available == false %}product_out_of_stock{% endif %}">
+                                            <div class="bundle_item_container">
+                                            <div class="bundle_check">
+                                                <input data-variant-modalqty="1" 
+                                                    {% if product.available == false %}disabled{% endif %}
+                                            
+                                                    {% if product.available == true %} data-qty="bundle_variant_qty-{{ forloop.index }}" {% endif %} 
+                                                    {% if product.available == true %}
+                                                        data-checkoption="checkbox_option_bundle_modal_{{ forloop.index  }}_{{ engine.id }}_quantity" 
+                                                        data-dropdown="bundle_variant_select-{{ forloop.index }}" {% endif %} 
+                                                        type="checkbox" 
+                                                    {% for bundle_variant in product.variants %}
+                                                        {% assign variant_title_macan = bundle_variant.title | strip %}
+                                                        {% if variant_title_macan == engine_oil_macan %}
+                                                        value="{{ bundle_variant.id }}"
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    style="display:block !important;" 
+                                                    class="bundle_checkbox_optionBYK_modal checkbox_option_bundle-modal-{{ forloop.index }}_{{ engine.id }} {% if product.variants.size > 1 %}have_variant{% endif %}"  
+                                                />
+                                            </div>
+
+                                            <div class="bundle_product_image">
+                                                <img class="bundle_image" src="{{ product.featured_media | img_url: '100x100'}}"/>
+                                            </div>
+
+                                            <div class="bundle_content " >
+                                                <label for="checkbox_option_bundle-{{ forloop.index }}">
+                                                    <div class="bundle_title">
+                                                        <p class="bundle_product_title" style="margin:0">{{ product.title }}</p>
+                                                        <span class="preview_price-{{ forloop.index }}_{{ engine.id }}">
+                                                        {% for bundle_variant in product.variants %}
+                                                            {% assign variant_title_macan = bundle_variant.title | strip %}
+                                                            {% if variant_title_macan == engine_oil_macan %}
+                                                                {{ bundle_variant.price |  money }}
+                                                            {% endif %}
+                                                        {% endfor %}   
+                                                        </span>
+                                                        
+                                                    </div>
+                                                </label>
+                                                {{engine_oil_macan}}
+                                            </div>
+                                            </div>
+                                            <div class="quantity_bundle">
+                                            <div class="quantity_selector">
+                                                {% render 'product-quantity-variant-modal',
+                                                    id_field: forloop.index ,
+                                                    modal_id: engine.id,
+                                                    current_variant: product.selected_or_first_available_variant.id ,
+                                                    qty_style: '1',
+                                                    quantity_label: product.metafields.custom.quantity_label,
+                                                    current_price: product.selected_or_first_available_variant.price,
+                                                    check_hidden: false,
+                                                    quantity_stt: 2
+                                                %}
+                                            </div> 
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                    <div class="modal-header_modal">
+                                        <button type="button" class="byk_add_btn_modal_btn product-form__submit button button--primary">
+                                            ADD ITEMS TO CART
+                                        </button>
+                                    </div>
+                                </div>
+                                </div>
+                            
+                                <div class="ac_content">
+                                <table border="1">
+                                    <tbody>
+                                        <tr>
+                                            <th>Year</th>
+                                            <th>Engine Oil</th>
+                                            <th>Capacity</th>
+                                            <th>Oil Filter</th>
+                                        </tr>
+                                        <tr>
+                                            <td>({{ engine.years }})</td>
+                                            <td class="engine_oil_container" >  {{ engine.engine_oil }}
+                                            <button type="button" class="open_modal_cart " data-modal-id="{{ engine.id }}" >
+                                                {% render 'cart-icon' %}
+                                            </button>
+                                            </td>
+                                            <td>{{ engine.capacity }}</td>
+                                            <td class="oil_filter_container">{{ engine.oil_filter }}         
+                                            <button type="button" 
+                                                {% for product_item in section.settings.product_oil_filter %}
+                                                    {% for variant_item in product_item.variants  %}
+                                                        {% if variant_item.title == engine.oil_filter %}
+                                                        {%  assign variant_item_id_2 = variant_item.id%} 
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endfor %}
+                                                    data-filter-variant="{{variant_item_id_2}}" class="open_modal_cart_filter"  data-modal-id="{{ engine.id }}_{{ forloop.index }}" >
+                                                {% render 'cart-icon' %}
+                                            </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                </div>
+
+                                <div class="ac_content_mobile">
+                                <table border="1">
+                                    <tr>
+                                    <th>Year</th>
+                                    <td>
+                                        {{ engine.year_range }}
+                                    </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Engine Oil</th>
+                                        <td class="engine_oil_container">{{ engine.engine_oil }} 
+                                            <button type="button" class="open_modal_cart " data-modal-id="{{ engine.id }}" >
+                                            {% render 'cart-icon' %}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Capacity</th>  
+                                        <td>
+                                            {{ engine.capacity }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Oil Filter</th>  
+                                        <td class="oil_filter_container">{{ engine.oil_filter }} 
+                                            <button type="button" 
+                                            {% for product_item in section.settings.product_oil_filter %}
+                                                {% for variant_item in product_item.variants  %}
+                                                    {% if variant_item.title == engine.oil_filter %}
+                                                        {%  assign variant_item_id = variant_item.id%} 
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endfor %}
+                                                data-filter-variant="{{variant_item_id}}" class="open_modal_cart_filter"  data-modal-id="{{ engine.id }}_{{ forloop.index }}" >
+                                            {% render 'cart-icon' %}
+                                            </button> 
+                                        </td>
+                                    </tr>
+                                </table>
+                                </div>
+                            </details>
+                        {% endfor %}
+        
+                        <h2>PORSCHE Cayenne 9YA Oil Kit Specs</h2>
+                        {% for engine in page.metafields.custom.porsche_cayenne_9ya_oil_kit_specs.value %}
+                            {% assign engine_oil_cayenne = engine.engine_oil | strip  %}
+                            <details class="accordion_item">
+                                <summary class="accordion_head">{{ engine.name }} ({{ engine.years }})</summary>
+                                <div class="byk_product_modal" id="modal_{{ engine.id }}">]
+                                <div style="display: block;" class="modal-overlay_modal"></div>
+                                <div  style="background:#fff" class="byk_product_modal_wrapper">
+                                    <div class="modal-header_modal">
+                                        <button class="modal-close modal-toggles"  data-modal-id="{{ engine.id }}" ><svg class="icon-close icon" viewBox="0 0 32 32"><use xlink:href="#icon-close"></use></svg></button>
+                                    </div>
+                                    {% for product in section.settings.product_list_modal %}
+                                        <div class="bundle_item_modal {% if product.available == false %}product_out_of_stock{% endif %}">
+                                            <div class="bundle_item_container">
+                                            <div class="bundle_check">
+                                                <input data-variant-modalqty="1"  
+                                                    {% if product.available == false %}disabled{% endif %}
+                                                    {% if product.available == true %} data-qty="bundle_variant_qty-{{ forloop.index }}" {% endif %} 
+                                                    {% if product.available == true %}
+                                                    data-checkoption="checkbox_option_bundle_modal_{{ forloop.index  }}_{{ engine.id }}_quantity" 
+                                                    data-dropdown="bundle_variant_select-{{ forloop.index }}" {% endif %} 
+                                                    type="checkbox" 
+                                                    {% for bundle_variant in product.variants %}
+                                                        {% assign variant_title_cayenne = bundle_variant.title | strip %}
+                                                        {% if variant_title_cayenne == engine_oil_cayenne %}
+                                                        value="{{ bundle_variant.id }}"
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    style="display:block !important;" 
+                                                    class="bundle_checkbox_optionBYK_modal checkbox_option_bundle-modal-{{ forloop.index }}_{{ engine.id }} {% if product.variants.size > 1 %}have_variant{% endif %}"  
+                                                />
+                                            </div>
+
+                                            <div class="bundle_product_image">
+                                                <img class="bundle_image" src="{{ product.featured_media | img_url: '100x100'}}"/>
+                                            </div>
+
+                                            <div class="bundle_content " >
+                                                <label for="checkbox_option_bundle-{{ forloop.index }}">
+                                                    <div class="bundle_title">
+                                                        <p class="bundle_product_title" style="margin:0">{{ product.title }}</p>
+                                                        <span class="preview_price-{{ forloop.index }}_{{ engine.id }}">
+                                                        {% for bundle_variant in product.variants %}
+                                                            {% assign variant_title_cayenne = bundle_variant.title | strip %}
+                                                            {% if variant_title_cayenne == engine_oil_cayenne %}
+                                                                {{ bundle_variant.price |  money }}
+                                                            {% endif %}
+                                                        {% endfor %}   
+                                                        </span>
+                                                    </div>
+                                                </label>
+                                                {{engine_oil_cayenne}}
+                                            </div>
+                                            </div>
+                                            <div class="quantity_bundle">
+                                            <div class="quantity_selector">
+                                                {% render 'product-quantity-variant-modal',
+                                                    id_field: forloop.index ,
+                                                    modal_id: engine.id,
+                                                    current_variant: product.selected_or_first_available_variant.id ,
+                                                    qty_style: '1',
+                                                    quantity_label: product.metafields.custom.quantity_label,
+                                                    current_price: product.selected_or_first_available_variant.price,
+                                                    check_hidden: false,
+                                                    quantity_stt: 2
+                                                %}
+                                            </div> 
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                    <div class="modal-header_modal">
+                                        <button type="button" class="byk_add_btn_modal_btn product-form__submit button button--primary">
+                                            ADD ITEMS TO CART
+                                        </button>
+                                    </div>
+                                </div>
+                                </div>
+                                <div class="ac_content">
+                                <table border="1">
+                                    <tbody>
+                                        <tr>
+                                            <th>Year</th>
+                                            <th>Engine Oil</th>
+                                            <th>Capacity</th>
+                                            <th>Oil Filter</th>
+                                        </tr>
+                                        <tr>
+                                            <td>({{ engine.years }})</td>
+                                            <td class="engine_oil_container" >  {{ engine.engine_oil }}
+                                            <button type="button" class="open_modal_cart " data-modal-id="{{ engine.id }}" >
+                                                {% render 'cart-icon' %}
+                                            </button>
+                                            </td>
+                                            <td>{{ engine.capacity }}</td>
+                                            <td class="oil_filter_container">{{ engine.oil_filter }}
+                                            <button type="button" 
+                                                {% for product_item in section.settings.product_oil_filter %}
+                                                    {% for variant_item in product_item.variants  %}
+                                                        {% if variant_item.title == engine.oil_filter %}
+                                                        {%  assign variant_item_id_3 = variant_item.id%} 
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endfor %}
+                                                    data-filter-variant="{{variant_item_id_3}}" class="open_modal_cart_filter"  data-modal-id="{{ engine.id }}_{{ forloop.index }}" >
+                                                {% render 'cart-icon' %}
+                                            </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                </div>
+                                <div class="ac_content_mobile">
+                                <table border="1">
+                                    <tr>
+                                        <th>Year</th>
+                                        <td>{{ engine.year_range }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Engine Oil</th>
+                                        <td class="engine_oil_container">{{ engine.engine_oil }}  
+                                            <button type="button" class="open_modal_cart " data-modal-id="{{ engine.id }}" >
+                                            {% render 'cart-icon' %}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Capacity</th>  
+                                        <td>
+                                            {{ engine.capacity }}   
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Oil Filter</th>  
+                                        <td class="oil_filter_container">{{ engine.oil_filter }} 
+                                            <button type="button" 
+                                            {% for product_item in section.settings.product_oil_filter %}
+                                                {% for variant_item in product_item.variants  %}
+                                                    {% if variant_item.title == engine.oil_filter %}
+                                                        {%  assign variant_item_id = variant_item.id%} 
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endfor %}
+                                                data-filter-variant="{{variant_item_id}}" class="open_modal_cart_filter"  data-modal-id="{{ engine.id }}_{{ forloop.index }}" >
+                                            {% render 'cart-icon' %}
+                                            </button> 
+                                        </td>
+                                    </tr>
+                                </table>
+                                </div>
+                            </details>
+                        {% endfor %}
+        
+                        <h2>PORSCHE Cayenne 92A Oil Kit Specs</h2>
+                        {% for engine in page.metafields.custom.porsche_cayenne_92a_oil_kit_specs.value %}
+                            {% assign engine_oil_cayenne_92 = engine.engine_oil | strip  %}
+                            <details class="accordion_item">
+                                <summary class="accordion_head">{{ engine.name }}</summary>
+
+                                {%  for detail  in engine.details %}  
+                                <div class="byk_product_modal" {{engine.id}} id="modal_{{ engine.id }}_{{ forloop.index }}">
+                                <div style="display: block;" class="modal-overlay_modal"></div>
+                                <div  style="background:#fff" class="byk_product_modal_wrapper">
+                                    <div class="modal-header_modal">
+                                        <button class="modal-close modal-toggles"  data-modal-id="{{ engine.id }}_{{ forloop.index }}" ><svg class="icon-close icon" viewBox="0 0 32 32"><use xlink:href="#icon-close"></use></svg></button>
+                                    </div>
+                                    {% for product in section.settings.product_list_modal %}
+                                        <div class="bundle_item_modal {% if product.available == false %}product_out_of_stock{% endif %}">
+                                            <div class="bundle_item_container">
+                                            <div class="bundle_check">
+                                                <input data-variant-modalqty="1" 
+                                                    {% if product.available == false %}disabled{% endif %}
+                                                    {% if product.available == true %} data-qty="bundle_variant_qty-{{ forloop.index }}" {% endif %} 
+                                                    {% if product.available == true %}
+                                                    data-checkoption="checkbox_option_bundle_{{ forloop.index }}_{{ detail.detail_id }}_quantity" 
+                                                    data-dropdown="bundle_variant_select-{{ forloop.index }}" {% endif %} 
+                                                    type="checkbox" 
+                                                    {% for bundle_variant in product.variants %}
+                                                        {% assign variant_title_cayenne = bundle_variant.title | strip %}
+                                                        {% if variant_title_cayenne == engine_oil_cayenne_92 %}
+                                                        value="{{ bundle_variant.id }}"
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    style="display:block !important;" 
+                                                    class="bundle_checkbox_optionBYK_modal checkbox_option_bundle-modal-{{ forloop.index }}_{{  detail.detail_id }} {% if product.variants.size > 1 %}have_variant{% endif %}"  
+                                                />
+                                            </div>
+
+                                            <div class="bundle_product_image">
+                                                <img class="bundle_image" src="{{ product.featured_media | img_url: '100x100'}}"/>
+                                            </div>
+
+                                            <div class="bundle_content " >
+                                                <label for="checkbox_option_bundle-{{ forloop.index }}">
+                                                    <div class="bundle_title">
+                                                        <p class="bundle_product_title" style="margin:0">{{ product.title }}</p>
+                                                        <span class="preview_price-{{ forloop.index }}_{{ detail.detail_id }}">
+                                                        {% for bundle_variant in product.variants %}
+                                                            {% assign variant_title_cayenne = bundle_variant.title | strip %}
+                                                            {% if variant_title_cayenne == engine_oil_cayenne_92 %}
+                                                                {{ bundle_variant.price |  money }}
+                                                            {% endif %}
+                                                        {% endfor %}   
+                                                        </span>
+                                                    </div>
+                                                </label>
+                                                {{engine_oil_cayenne_92}}
+                                            </div>
+                                            </div>
+                                            <div class="quantity_bundle">
+                                            <div class="quantity_selector">
+                                                {% render 'product-quantity-variant-modal',
+                                                id_field: forloop.index ,
+                                                modal_id:  detail.detail_id,
+                                                current_variant: product.selected_or_first_available_variant.id ,
+                                                qty_style: '1',
+                                                quantity_label: product.metafields.custom.quantity_label,
+                                                current_price: product.selected_or_first_available_variant.price,
+                                                check_hidden: false,
+                                                quantity_stt: 2
+                                            %}
+                                            </div> 
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                    <div class="modal-header_modal">
+                                        <button type="button" class="byk_add_btn_modal_btn product-form__submit button button--primary">
+                                            ADD ITEMS TO CART
+                                        </button>
+                                    </div>
+                                </div>
+                                </div>
+                                {% endfor %}
+                                <div class="ac_content">
+                                <table border="1">
+                                    <tbody>
+                                        <tr>
+                                            <th>Year</th>
+                                            <th>Engine Oil</th>
+                                            <th>Capacity</th>
+                                            <th>Oil Filter</th>
+                                        </tr>
+                                    {%  for detail  in engine.details %}  
+                                        <tr>
+                                            <td>({{ detail.year_range }})</td>
+                                            <td class="engine_oil_container" >  {{ detail.detail_engine_oil }}
+                                            <button type="button" class="open_modal_cart " data-modal-id="{{ engine.id }}_{{ forloop.index }}" >
+                                                {% render 'cart-icon' %}
+                                            </button>
+                                            </td>
+                                            <td>{{ detail.capacity }}</td>
+                                            <td class="oil_filter_container">{{ detail.oil_filter }}
+                                            <button type="button" 
+                                                {% for product_item in section.settings.product_oil_filter %}
+                                                    {% for variant_item in product_item.variants  %}
+                                                        {% if variant_item.title == detail.oil_filter %}
+                                                        {%  assign variant_item_id_4 = variant_item.id%} 
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endfor %}
+                                                    data-filter-variant="{{variant_item_id_4}}" class="open_modal_cart_filter"  data-modal-id="{{ engine.id }}_{{ forloop.index }}" >
+                                                {% render 'cart-icon' %}
+                                            </button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %} 
+                                    </tbody>
+                                </table>
+                                </div>
+                                {%  for detail  in engine.details %}  
+                                {% if forloop.index == 1 %}
+                                <div class="ac_content_mobile">
+                                    <table border="1">
+                                        <tr>
+                                            <th>Year</th>
+                                            {%  for detail  in engine.details %}
+                                            {% if forloop.index == 1 %}
+                                            <td>
+                                                {{ detail.year_range }}
+                                            </td>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                        <tr>
+                                            <th>Engine Oil</th>
+                                            {%  for detail  in engine.details %}
+                                                {% if forloop.index == 1 %}
+                                                    <td class="engine_oil_container">{{ detail.detail_engine_oil }} 
+                                                        <button type="button" class="open_modal_cart " data-modal-id="{{ engine.id }}_{{ forloop.index }}" >
+                                                        {% render 'cart-icon' %}
+                                                        </button>
+                                                    </td>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                        <tr>
+                                            <th>Capacity</th>  
+                                            {%  for detail  in engine.details %}
+                                            {% if forloop.index == 1 %}
+                                                <td>
+                                                    {{ detail.capacity }}
+                                                </td>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                        <tr>
+                                            <th>Oil Filter</th>  
+                                            {%  for detail  in engine.details %}
+                                            {% if forloop.index == 1 %}
+                                                <td class="oil_filter_container">{{ detail.oil_filter }} 
+                                                    <button type="button" 
+                                                    {% for product_item in section.settings.product_oil_filter %}
+                                                        {% for variant_item in product_item.variants  %}
+                                                        {% if variant_item.title == detail.oil_filter %}
+                                                            {%  assign variant_item_id = variant_item.id%} 
+                                                        {% endif %}
+                                                        {% endfor %}
+                                                    {% endfor %}
+                                                        data-filter-variant="{{variant_item_id}}" class="open_modal_cart_filter"  data-modal-id="{{ engine.id }}_{{ forloop.index }}" >
+                                                    {% render 'cart-icon' %}
+                                                </button> 
+                                            </td>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                    </table>
+                                </div>
+                                <br>
+                                {% endif %}
+                                {% if forloop.index == 2 %}
+                                <div class="ac_content_mobile">
+                                    <table border="1">
+                                        <tr>
+                                            <th>Year</th>
+                                            {%  for detail  in engine.details %}
+                                            {% if forloop.index == 2 %}
+                                            <td>
+                                                {{ detail.year_range }}
+                                            </td>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                        <tr>
+                                            <th>Engine Oil</th>
+                                            {%  for detail  in engine.details %}
+                                            {% if forloop.index == 2 %}
+                                                <td class="engine_oil_container">{{ detail.detail_engine_oil }} 
+                                                    <button type="button" class="open_modal_cart " data-modal-id="{{ engine.id }}_{{ forloop.index }}">
+                                                        {% render 'cart-icon' %}
+                                                    </button>
+                                                </td>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                        <tr>
+                                            <th>Capacity</th>  
+                                            {%  for detail  in engine.details %}
+                                            {% if forloop.index == 2 %}
+                                                <td>
+                                                    {{ detail.capacity }}
+                                                </td>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                        <tr>
+                                            <th>Oil Filter</th>  
+                                            {%  for detail  in engine.details %}
+                                            {% if forloop.index == 2 %}
+                                                <td class="oil_filter_container">{{ detail.oil_filter }} 
+                                                    <button type="button" 
+                                                    {% for product_item in section.settings.product_oil_filter %}
+                                                        {% for variant_item in product_item.variants  %}
+                                                        {% if variant_item.title == detail.oil_filter %}
+                                                            {%  assign variant_item_id = variant_item.id%} 
+                                                        {% endif %}
+                                                        {% endfor %}
+                                                    {% endfor %}
+                                                        data-filter-variant="{{variant_item_id}}" class="open_modal_cart_filter"  data-modal-id="{{ engine.id }}_{{ forloop.index }}" >
+                                                    {% render 'cart-icon' %}
+                                                </button> 
+                                            </td>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                    </table>
+                                </div>
+                                <br> 
+                                {% endif %}
+                                {% if forloop.index == 3 %}
+                                <div class="ac_content_mobile">
+                                    <table border="1">
+                                        <tr>
+                                            <th>Year</th>
+                                            {%  for detail  in engine.details %}
+                                            {% if forloop.index == 3 %}
+                                            <td>
+                                                {{ detail.year_range }}
+                                            </td>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                        <tr>
+                                            <th>Engine Oil</th>
+                                            {%  for detail  in engine.details %}
+                                            {% if forloop.index == 3 %}
+                                                <td class="engine_oil_container">{{ detail.detail_engine_oil }} 
+                                                <button type="button" class="open_modal_cart " data-modal-id="{{ engine.id }}_{{ forloop.index }}" >
+                                                    {% render 'cart-icon' %}
+                                                </button>
+                                                </td>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                        <tr>
+                                            <th>Capacity</th>  
+                                            {%  for detail  in engine.details %}
+                                            {% if forloop.index == 3 %}
+                                                <td>
+                                                    {{ detail.capacity }}
+                                                </td>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                        <tr>
+                                            <th>Oil Filter</th>  
+                                            {%  for detail  in engine.details %}
+                                            {% if forloop.index == 3 %}
+                                                <td class="oil_filter_container">{{ detail.oil_filter }} 
+                                                    <button type="button" 
+                                                    {% for product_item in section.settings.product_oil_filter %}
+                                                        {% for variant_item in product_item.variants  %}
+                                                        {% if variant_item.title == detail.oil_filter %}
+                                                            {%  assign variant_item_id = variant_item.id%} 
+                                                        {% endif %}
+                                                        {% endfor %}
+                                                    {% endfor %}
+                                                        data-filter-variant="{{variant_item_id}}" class="open_modal_cart_filter"  data-modal-id="{{ engine.id }}_{{ forloop.index }}" >
+                                                    {% render 'cart-icon' %}
+                                                </button> 
+                                            </td>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                    </table>
+                                </div> 
+                                {% endif %}
+                                {% endfor %}
+                            </details>
+                        {% endfor %}
+                    
+                        <h2>PORSCHE 911 991 Oil Kit Specs</h2>
+                        {% for engine in page.metafields.custom.porsche_911_991_oil_kit_specs.value %}
+                            {% assign engine_oil_cayenne_911_991 = engine.engine_oil | strip  %}
+                                <details class="accordion_item">
+                                <summary class="accordion_head">{{ engine.name }}</summary>
+                                        {%  for detail  in engine.details %}  
+                                            <div class="byk_product_modal" id="modal_{{ engine.id }}_{{ forloop.index }}">
+                                            <div style="display: block;" class="modal-overlay_modal"></div>
+                                                <div  style="background:#fff" class="byk_product_modal_wrapper">
+                                                    <div class="modal-header_modal">
+                                                        <button class="modal-close modal-toggles"  data-modal-id="{{ engine.id }}_{{ forloop.index }}" ><svg class="icon-close icon" viewBox="0 0 32 32"><use xlink:href="#icon-close"></use></svg></button>
+                                                    </div>
+                                                    {% for product in section.settings.product_list_modal %}
+                                                        <div class="bundle_item_modal {% if product.available == false %}product_out_of_stock{% endif %}">
+                                                        <div class="bundle_item_container">
+                                                            <div class="bundle_check">
+                                                                <input data-variant-modalqty="1" 
+                                                                    {% if product.available == false %}disabled{% endif %}
+                                                                    {% if product.available == true %} data-qty="bundle_variant_qty-{{ forloop.index }}" {% endif %} 
+                                                                    {% if product.available == true %}
+                                                                    data-checkoption="checkbox_option_bundle_{{ forloop.index }}_{{ detail.detail_id }}_quantity" 
+                                                                    data-dropdown="bundle_variant_select-{{ forloop.index }}" {% endif %} 
+                                                                    type="checkbox" 
+                                                                    {% for bundle_variant in product.variants %}
+                                                                    {% assign variant_title_cayenne = bundle_variant.title | strip %}
+                                                                    {% if variant_title_cayenne == engine_oil_cayenne_911_991 %}
+                                                                    
+                                                                        value="{{ bundle_variant.id }}"
+                                                                    {% endif %}
+                                                                    {% endfor %}
+                                                                    style="display:block !important;" 
+                                                                    class="bundle_checkbox_optionBYK_modal checkbox_option_bundle-modal-{{ forloop.index }}_{{  detail.detail_id }}  {% if product.variants.size > 1 %}have_variant{% endif %}"  
+                                                                
+                                                                />
+                                                            </div>
+
+                                                            <div class="bundle_product_image">
+                                                                <img class="bundle_image" src="{{ product.featured_media | img_url: '100x100'}}"/>
+                                                            </div>
+
+                                                            <div class="bundle_content " >
+                                                                <label for="checkbox_option_bundle-{{ forloop.index }}">
+                                                                    <div class="bundle_title">
+                                                                    <p class="bundle_product_title" style="margin:0">{{ product.title }}</p>
+                                                                    <span class="preview_price-{{ forloop.index }}_{{ detail.detail_id }}">
+                                                                    
+                                                                        {% for bundle_variant in product.variants %}
+                                                                            {% assign variant_title_cayenne = bundle_variant.title | strip %}
+                                                                            {% if variant_title_cayenne == engine_oil_cayenne_911_991 %}
+                                                                        
+                                                                                {{ bundle_variant.price |  money }}
+                                                                            {% endif %}
+                                                                        {% endfor %}   
+                                                                    </span>
+                                                                    </div>
+                                                                </label>
+                                                                {{engine_oil_cayenne_911_991}}
+                                                            </div>
+                                                        </div>
+                                                        <div class="quantity_bundle">
+                                                            <div class="quantity_selector">
+                                                                {% render 'product-quantity-variant-modal',
+                                                                id_field: forloop.index ,
+                                                                modal_id:  detail.detail_id,
+                                                                current_variant: product.selected_or_first_available_variant.id ,
+                                                                qty_style: '1',
+                                                                quantity_label: product.metafields.custom.quantity_label,
+                                                                current_price: product.selected_or_first_available_variant.price,
+                                                                check_hidden: false,
+                                                                quantity_stt: 2
+                                                            %}
+                                                            </div> 
+                                                        </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                    <div class="modal-header_modal">
+                                                        <button type="button" class="byk_add_btn_modal_btn product-form__submit button button--primary">
+                                                        ADD ITEMS TO CART
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                {% endfor %}
+                                <div class="ac_content">
+                                    <table border="1">
+                                        <tbody>
+                                            <tr>
+                                            <th>Year</th>
+                                            <th>Engine Oil</th>
+                                            <th>Capacity</th>
+                                            <th>Oil Filter</th>
+                                            </tr>
+                                            {%  for detail  in engine.details %}  
+                                            <tr>
+                                        
+                                                <td>({{ detail.year_range }})</td>
+                                                <td class="engine_oil_container" >  {{ detail.detail_engine_oil }}
+                                                    <button type="button" class="open_modal_cart " data-modal-id="{{ engine.id }}_{{ forloop.index }}" >
+                                                        {% render 'cart-icon' %}
+                                                    </button>
+                                                </td>
+                                                <td>{{ detail.capacity }}</td>
+                                                <td class="oil_filter_container">{{ detail.oil_filter }}
+
+                                                        
+                                                <button type="button" 
+                                                    {% for product_item in section.settings.product_oil_filter %}
+                                                        {% for variant_item in product_item.variants  %}
+                                                        {% if variant_item.title == detail.oil_filter %}
+                                                            {%  assign variant_item_id_5 = variant_item.id%} 
+                                                        {% endif %}
+                                                        {% endfor %}
+                                                    {% endfor %}
+                                                        data-filter-variant="{{variant_item_id_5}}" class="open_modal_cart_filter"  data-modal-id="{{ engine.id }}_{{ forloop.index }}" >
+                                                    {% render 'cart-icon' %}
+                                                </button>
+                                                </td>
+                                            </tr>
+                                            {% endfor %} 
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {%  for detail  in engine.details %}  
+                                    {% if forloop.index == 1 %}
+                                    <div class="ac_content_mobile">
+                                        <table border="1">
+                                            <tr>
+                                            <th>Year</th>
+                                            {%  for detail  in engine.details %}
+                                                {% if forloop.index == 1 %}
+                                                    <td>
+                                                    
+                                                        {{ detail.year_range }}
+                                                    
+                                                    </td>
+                                                {% endif %}
+                                            {% endfor %}
+                                            </tr>
+                                            <tr>
+                                            <th>Engine Oil</th>
+                                            {%  for detail  in engine.details %}
+                                                {% if forloop.index == 1 %}
+                                                    <td class="engine_oil_container">{{ detail.detail_engine_oil }} 
+                                                        <button type="button" class="open_modal_cart "  data-modal-id="{{ engine.id }}_{{ forloop.index }}">
+                                                        {% render 'cart-icon' %}
+                                                        </button>
+                                                    </td>
+                                                {% endif %}
+                                            {% endfor %}
+                                            </tr>
+                                            <tr>
+                                            <th>Capacity</th>  
+                                            {%  for detail  in engine.details %}
+                                                {% if forloop.index == 1 %}
+                                                <td>
+                                                    {{ detail.capacity }}
+                                                </td>
+                                                {% endif %}
+                                            {% endfor %}
+                                            </tr>
+                                            <tr>
+                                            <th>Oil Filter</th>  
+                                        
+                                            {%  for detail  in engine.details %}
+                                                {% if forloop.index == 1 %}
+                                                    <td class="oil_filter_container">{{ detail.oil_filter }} 
+                                                        <button type="button" 
+                                                        {% for product_item in section.settings.product_oil_filter %}
+                                                        {% for variant_item in product_item.variants  %}
+                                                            {% if variant_item.title == detail.oil_filter %}
+                                                                {%  assign variant_item_id = variant_item.id%} 
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                        {% endfor %}
+                                                        data-filter-variant="{{variant_item_id}}" class="open_modal_cart_filter"  data-modal-id="{{ engine.id }}_{{ forloop.index }}" >
+                                                        {% render 'cart-icon' %}
+                                                    </button> 
+                                                </td>
+                                                {% endif %}
+                                            {% endfor %}
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <br>
+                                    {% endif %}
+                                    {% if forloop.index == 2 %}
+                                    <div class="ac_content_mobile">
+                                        <table border="1">
+                                            <tr>
+                                            <th>Year</th>
+                                            {%  for detail  in engine.details %}
+                                                {% if forloop.index == 2 %}
+                                                    <td>
+                                                        {{ detail.year_range }}
+                                                    </td>
+                                                {% endif %}
+                                            {% endfor %}
+                                            </tr>
+                                            <tr>
+                                            <th>Engine Oil</th>
+                                            {%  for detail  in engine.details %}
+                                                {% if forloop.index == 2 %}
+                                                    <td class="engine_oil_container">{{ detail.detail_engine_oil }} 
+                                                        <button type="button" class="open_modal_cart "  data-modal-id="{{ engine.id }}_{{ forloop.index }}" >
+                                                        {% render 'cart-icon' %}
+                                                        </button>
+                                                    </td>
+                                                {% endif %}
+                                            {% endfor %}
+                                            </tr>
+                                            <tr>
+                                            <th>Capacity</th>  
+                                            {%  for detail  in engine.details %}
+                                                {% if forloop.index == 2 %}
+                                                    <td>
+                                                        {{ detail.capacity }}
+                                                    </td>
+                                                {% endif %}
+                                            {% endfor %}
+                                            </tr>
+                                            <tr>
+                                            <th>Oil Filter</th>  
+                                            {% comment %} <td class="oil_filter_container">{{ engine.oil_filter }}   </td> {% endcomment %}
+                                            {%  for detail  in engine.details %}
+                                                {% if forloop.index == 2 %}
+                                                    <td class="oil_filter_container">{{ detail.oil_filter }} 
+                                                        <button type="button" 
+                                                        {% for product_item in section.settings.product_oil_filter %}
+                                                        {% for variant_item in product_item.variants  %}
+                                                            {% if variant_item.title == detail.oil_filter %}
+                                                                {%  assign variant_item_id = variant_item.id%} 
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                        {% endfor %}
+                                                        data-filter-variant="{{variant_item_id}}" class="open_modal_cart_filter"  data-modal-id="{{ engine.id }}_{{ forloop.index }}" >
+                                                        {% render 'cart-icon' %}
+                                                    </button> 
+                                                </td>
+                                                {% endif %}
+                                            {% endfor %}
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <br> 
+                                    {% endif %}
+                                    {% if forloop.index == 3 %}
+                                    <div class="ac_content_mobile">
+                                        <table border="1">
+                                            <tr>
+                                            <th>Year</th>
+                                            {%  for detail  in engine.details %}
+                                                {% if forloop.index == 3 %}
+                                                    <td>
+                                                        {{ detail.year_range }}
+                                                    </td>
+                                                {% endif %}
+                                            {% endfor %}
+                                            </tr>
+                                            <tr>
+                                            <th>Engine Oil</th>
+                                            {%  for detail  in engine.details %}
+                                                {% if forloop.index == 3 %}
+                                                    <td class="engine_oil_container">{{ detail.detail_engine_oil }} 
+                                                    <button type="button" class="open_modal_cart "  data-modal-id="{{ engine.id }}_{{ forloop.index }}" >
+                                                        {% render 'cart-icon' %}
+                                                    </button>
+                                                    </td>
+                                                {% endif %}
+                                            {% endfor %}
+                                            </tr>
+                                            <tr>
+                                            <th>Capacity</th>  
+                                            {%  for detail  in engine.details %}
+                                                {% if forloop.index == 3 %}
+                                                    <td>
+                                                        {{ detail.capacity }}
+                                                    </td>
+                                                {% endif %}
+                                            {% endfor %}
+                                            </tr>
+                                            <tr>
+                                            <th>Oil Filter</th>  
+                                            
+                                            {%  for detail  in engine.details %}
+                                                {% if forloop.index == 3 %}
+                                                    <td class="oil_filter_container">{{ detail.oil_filter }} 
+                                                        <button type="button" 
+                                                        {% for product_item in section.settings.product_oil_filter %}
+                                                        {% for variant_item in product_item.variants  %}
+                                                            {% if variant_item.title == detail.oil_filter %}
+                                                                {%  assign variant_item_id = variant_item.id%} 
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                        {% endfor %}
+                                                        data-filter-variant="{{variant_item_id}}" class="open_modal_cart_filter"  data-modal-id="{{ engine.id }}_{{ forloop.index }}" >
+                                                        {% render 'cart-icon' %}
+                                                    </button> 
+                                                </td>
+                                                {% endif %}
+                                            {% endfor %}
+                                            </tr>
+                                        </table>
+                                    </div> 
+                                    {% endif %}
+                                {% endfor %}
+                                </details>
+                        {% endfor %}
+                    
+                        <h2>PORSCHE 911 992 Oil Kit Specs</h2>
+                        {% for engine in page.metafields.custom.porsche_911_992_oil_kit_specs.value %}
+                            {% assign engine_oil_cayenne_911_992 = engine.engine_oil | strip  %}
+                            <details class="accordion_item">
+                                <summary class="accordion_head">{{ engine.name }}</summary>
+                                {%  for detail  in engine.details %}  
+                                <div class="byk_product_modal" id="modal_{{ engine.id }}_{{ forloop.index }}">
+                                    <div style="display: block;" class="modal-overlay_modal"></div>
+                                        <div  style="background:#fff" class="byk_product_modal_wrapper">
+                                            <div class="modal-header_modal">
+                                            <button class="modal-close modal-toggles"  data-modal-id="{{ engine.id }}_{{ forloop.index }}" ><svg class="icon-close icon" viewBox="0 0 32 32"><use xlink:href="#icon-close"></use></svg></button>
+                                            </div>
+                                            {% for product in section.settings.product_list_modal %}
+                                            <div class="bundle_item_modal {% if product.available == false %}product_out_of_stock{% endif %}">
+                                                <div class="bundle_item_container">
+                                                    <div class="bundle_check">
+                                                        <input data-variant-modalqty="1" 
+                                                        {% if product.available == false %}disabled{% endif %}
+                                                        
+                                                        {% if product.available == true %} data-qty="bundle_variant_qty-{{ forloop.index }}" {% endif %} 
+                                                        {% if product.available == true %}
+                                                            data-checkoption="checkbox_option_bundle_{{ forloop.index }}_{{ detail.detail_id }}_quantity" 
+                                                        data-dropdown="bundle_variant_select-{{ forloop.index }}" {% endif %} 
+                                                        type="checkbox" 
+                                                        {% for bundle_variant in product.variants %}
+                                                            {% assign variant_title_cayenne = bundle_variant.title | strip %}
+                                                            {% if variant_title_cayenne == engine_oil_cayenne_911_992 %}
+                                                        
+                                                                value="{{ bundle_variant.id }}"
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                        style="display:block !important;" 
+                                                        class="bundle_checkbox_optionBYK_modal checkbox_option_bundle-modal-{{ forloop.index }}_{{  detail.detail_id }} {% if product.variants.size > 1 %}have_variant{% endif %}"  
+                                                        
+                                                        />
+                                                    </div>
+
+                                                    <div class="bundle_product_image">
+                                                        <img class="bundle_image" src="{{ product.featured_media | img_url: '100x100'}}"/>
+                                                    </div>
+
+                                                    <div class="bundle_content " >
+                                                        <label for="checkbox_option_bundle-{{ forloop.index }}">
+                                                        <div class="bundle_title">
+                                                            <p class="bundle_product_title" style="margin:0">{{ product.title }}</p>
+                                                            <span class="preview_price-{{ forloop.index }}_{{ detail.detail_id }}">
+                                                                {% for bundle_variant in product.variants %}
+                                                                    {% assign variant_title_cayenne = bundle_variant.title | strip %}
+                                                                    {% if variant_title_cayenne == engine_oil_cayenne_911_992 %}
+                                                                    {{ bundle_variant.price |  money }}
+                                                                    {% endif %}
+                                                                {% endfor %}   
+                                                            </span>
+                                                        </div>
+                                                        </label>
+                                                        {{engine_oil_cayenne_911_992}}
+                                                    </div>
+                                                </div>
+                                                <div class="quantity_bundle">
+                                                    <div class="quantity_selector">
+                                                        {% render 'product-quantity-variant-modal',
+                                                        id_field: forloop.index ,
+                                                        modal_id:  detail.detail_id,
+                                                        current_variant: product.selected_or_first_available_variant.id ,
+                                                        qty_style: '1',
+                                                        quantity_label: product.metafields.custom.quantity_label,
+                                                        current_price: product.selected_or_first_available_variant.price,
+                                                        check_hidden: false,
+                                                        quantity_stt: 2
+                                                        %}
+                                                    </div> 
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                            <div class="modal-header_modal">
+                                            <button type="button" class="byk_add_btn_modal_btn product-form__submit button button--primary">
+                                                ADD ITEMS TO CART
+                                            </button>
+                                            </div>
+                                        </div>
+                                </div>
+                                {% endfor %}
+                                <div class="ac_content">
+                                <table border="1">
+                                    <tbody>
+                                        <tr>
+                                            <th>Year</th>
+                                            <th>Engine Oil</th>
+                                            <th>Capacity</th>
+                                            <th>Oil Filter</th>
+                                        </tr>
+                                        {%  for detail  in engine.details %}  
+                                            <tr>
+                                        
+                                            <td>({{ detail.year_range }})</td>
+                                            <td class="engine_oil_container" >  {{ detail.detail_engine_oil }}
+                                                <button type="button" class="open_modal_cart " data-modal-id="{{ engine.id }}_{{ forloop.index }}" >
+                                                    {% render 'cart-icon' %}
+                                                </button>
+                                            </td>
+                                            <td>{{ detail.capacity }}</td>
+                                            <td class="oil_filter_container">{{ detail.oil_filter }}
+                                            <button type="button" 
+                                                {% for product_item in section.settings.product_oil_filter %}
+                                                    {% for variant_item in product_item.variants  %}
+                                                        {% if variant_item.title == detail.oil_filter %}
+                                                        {%  assign variant_item_id_6 = variant_item.id%} 
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endfor %}
+                                                    data-filter-variant="{{variant_item_id_6}}" class="open_modal_cart_filter"  data-modal-id="{{ engine.id }}_{{ forloop.index }}" >
+                                                {% render 'cart-icon' %}
+                                            </button>  
+                                            </td>
+
+                                            </tr>
+                                        {% endfor %} 
+                                    </tbody>
+                                </table>
+                                </div>
+                                {%  for detail  in engine.details %}  
+                                {% if forloop.index == 1 %}
+                                <div class="ac_content_mobile">
+                                    <table border="1">
+                                        <tr>
+                                            <th>Year</th>
+                                            {%  for detail  in engine.details %}
+                                            {% if forloop.index == 1 %}
+                                                <td>
+                                                    {{ detail.year_range }}
+                                                </td>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                        <tr>
+                                            <th>Engine Oil</th>
+                                            {%  for detail  in engine.details %}
+                                            {% if forloop.index == 1 %}
+                                                <td class="engine_oil_container">{{ detail.detail_engine_oil }} 
+                                                <button type="button" class="open_modal_cart "  data-modal-id="{{ engine.id }}_{{ forloop.index }}">
+                                                    {% render 'cart-icon' %}
+                                                </button>
+                                                </td>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                        <tr>
+                                            <th>Capacity</th>  
+                                            {%  for detail  in engine.details %}
+                                            {% if forloop.index == 1 %}
+                                                <td>
+                                                    {{ detail.capacity }}
+                                                </td>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                        <tr>
+                                            <th>Oil Filter</th>  
+                                            {% comment %} <td class="oil_filter_container">{{ engine.oil_filter }}   </td> {% endcomment %}
+                                            {%  for detail  in engine.details %}
+                                            {% if forloop.index == 1 %}
+                                                <td class="oil_filter_container">{{ detail.oil_filter }} 
+                                                    <button type="button" 
+                                                    {% for product_item in section.settings.product_oil_filter %}
+                                                        {% for variant_item in product_item.variants  %}
+                                                        {% if variant_item.title == detail.oil_filter %}
+                                                            {%  assign variant_item_id = variant_item.id%} 
+                                                        {% endif %}
+                                                        {% endfor %}
+                                                    {% endfor %}
+                                                        data-filter-variant="{{variant_item_id}}" class="open_modal_cart_filter"  data-modal-id="{{ engine.id }}_{{ forloop.index }}" >
+                                                    {% render 'cart-icon' %}
+                                                </button> 
+                                            </td>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                    </table>
+                                </div>
+                                <br>
+                                {% endif %}
+                                {% if forloop.index == 2 %}
+                                <div class="ac_content_mobile">
+                                    <table border="1">
+                                        <tr>
+                                            <th>Year</th>
+                                            {%  for detail  in engine.details %}
+                                            {% if forloop.index == 2 %}
+                                                <td>
+                                                    {{ detail.year_range }}
+                                                </td>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                        <tr>
+                                            <th>Engine Oil</th>
+                                            {%  for detail  in engine.details %}
+                                            {% if forloop.index == 2 %}
+                                                <td class="engine_oil_container">{{ detail.detail_engine_oil }} 
+                                                <button type="button" class="open_modal_cart "  data-modal-id="{{ engine.id }}_{{ forloop.index }}">
+                                                    {% render 'cart-icon' %}
+                                                </button>
+                                                </td>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                        <tr>
+                                            <th>Capacity</th>  
+                                            {%  for detail  in engine.details %}
+                                            {% if forloop.index == 2 %}
+                                                <td>
+                                                    {{ detail.capacity }}
+                                                </td>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                        <tr>
+                                            <th>Oil Filter</th>  
+                                            {% comment %} <td class="oil_filter_container">{{ engine.oil_filter }}   </td> {% endcomment %}
+                                            {%  for detail  in engine.details %}
+                                            {% if forloop.index == 2 %}
+                                                <td class="oil_filter_container">{{ detail.oil_filter }} 
+                                                    <button type="button" 
+                                                    {% for product_item in section.settings.product_oil_filter %}
+                                                        {% for variant_item in product_item.variants  %}
+                                                        {% if variant_item.title == detail.oil_filter %}
+                                                            {%  assign variant_item_id = variant_item.id%} 
+                                                        {% endif %}
+                                                        {% endfor %}
+                                                    {% endfor %}
+                                                        data-filter-variant="{{variant_item_id}}" class="open_modal_cart_filter"  data-modal-id="{{ engine.id }}_{{ forloop.index }}" >
+                                                    {% render 'cart-icon' %}
+                                                </button> 
+                                            </td>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                    </table>
+                                </div>
+                                <br> 
+                                {% endif %}
+                                {% if forloop.index == 3 %}
+                                <div class="ac_content_mobile">
+                                    <table border="1">
+                                        <tr>
+                                            <th>Year</th>
+                                            {%  for detail  in engine.details %}
+                                            {% if forloop.index == 3 %}
+                                                <td>
+                                                    {{ detail.year_range }}
+                                                </td>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                        <tr>
+                                            <th>Engine Oil</th>
+                                            {%  for detail  in engine.details %}
+                                            {% if forloop.index == 3 %}
+                                                <td class="engine_oil_container">{{ detail.detail_engine_oil }} 
+                                                <button type="button" class="open_modal_cart "  data-modal-id="{{ engine.id }}_{{ forloop.index }}" >
+                                                    {% render 'cart-icon' %}
+                                                </button>
+                                                </td>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                        <tr>
+                                            <th>Capacity</th>  
+                                            {%  for detail  in engine.details %}
+                                            {% if forloop.index == 3 %}
+                                                <td>
+                                                    {{ detail.capacity }}
+                                                </td>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                        <tr>
+                                            <th>Oil Filter</th>  
+                                        
+                                            {%  for detail  in engine.details %}
+                                            {% if forloop.index == 3 %}
+                                                <td class="oil_filter_container">{{ detail.oil_filter }} 
+                                                    <button type="button" 
+                                                    {% for product_item in section.settings.product_oil_filter %}
+                                                        {% for variant_item in product_item.variants  %}
+                                                        {% if variant_item.title == detail.oil_filter %}
+                                                            {%  assign variant_item_id = variant_item.id%} 
+                                                        {% endif %}
+                                                        {% endfor %}
+                                                    {% endfor %}
+                                                        data-filter-variant="{{variant_item_id}}" class="open_modal_cart_filter"  data-modal-id="{{ engine.id }}_{{ forloop.index }}" >
+                                                    {% render 'cart-icon' %}
+                                                </button> 
+                                            </td>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                    </table>
+                                </div> 
+                                {% endif %}
+                                {% endfor %}
+                            </details>
+                        {% endfor %}
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div> 
+
+    <div class="byk_product">
+
+        {% if section.settings.selected_collection != blank or section.settings.selected_collection != nil %}
+        {% assign selected_collection = collections[section.settings.selected_collection] %}
+        {% paginate selected_collection.products by 100 %}
+        {% assign has_not_on_the_car = false %}
+            <div class="on-the-car">
+            {% if selected_collection.products != blank and request.path != '/pages/build-your-oil-kit' %}
+                <h3>Products installed on {{ section.settings.build_name }}</h3>
+            {% endif %}
+            {% if selected_collection.products != blank and request.path == '/pages/build-your-oil-kit' %}
+                <h3>Items in the Kit</h3>
+            {% endif %}
+            {% for product in selected_collection.products %}
+                {% if product.metafields.custom.on_the_car != false %}
+                <div class="bundle_item {% if product.available == false %}product_out_of_stock{% endif %}">
+                    <div class="view_reason_container" data-id="{{ forloop.index }}" >
+                    
+                        <div class="info-icon">
+                        
+                        <img   src="{{ section.settings.info_icon | img_url : '15x15' }}"  width="15px";
+                            
+                            height="15px">
+                        {% comment %} {%  render 'info-icon' %} {% endcomment %}
+                        
+                        
+                        {% comment %} {{page.metafields.custom.reason.value }} {% endcomment %}
+                        
+                            {% for reason in page.metafields.custom.reason.value %}
+                        
+                                {% if  reason.which_page.value.handle  == page.handle %}
+                                    {% if reason.product.value.handle ==  product.handle %}
+                                    <div  class="reason_container" id="modal_{{ forloop.index }}">
+                                    {{ reason.reason.value }}
+                                    </div>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        
+                        </div>
+                        
+                
+                    </div>
+                    <div class="bundle_item_container">
+                        <div class="bundle_check">
+                        {% if product.available == true %}
+                        <input  data-variant-quantity="1" {% if product.metafields.custom.lock_product_in_bundle_kit == true %}disabled checked{% endif %} onclick="toggleBYKCheckbox(this)" 
+                            {% if product.available == false %}disabled{% endif %}
+                    
+                            {% if product.available == true %} data-qty="bundle_variant_qty-{{ forloop.index }}" {% endif %} 
+                            {% if product.available == true %}
+                            data-checkoption="checkbox_option_bundle_{{ forloop.index }}_quantity" 
+                            data-dropdown="bundle_variant_select-{{ forloop.index }}" {% endif %} 
+                            type="checkbox" 
+                            data-check-id="{{ forloop.index }}"
+                            style="display:block !important;" 
+                            class="bundle_checkbox_optionBYK checkbox_option_bundle-{{ forloop.index }} {% if product.variants.size > 1 %}have_variant{% endif %}"  
+                            {% if product.variants.size > 1 %}
+                                {% if product.metafields.custom.lock_product_in_bundle_kit == false or  product.metafields.custom.lock_product_in_bundle_kit == blank %} 
+                                value="{{ product.selected_or_first_available_variant.id }}"
+                                {% else %}
+                                value=""
+                                {% endif %} 
+                            {% else %}
+                            value="{{ product.selected_or_first_available_variant.id }}" 
+                        {% endif %}
+                            data-product-price="{{ product.selected_or_first_available_variant.price | money }}"
+                            data-product-prevprice="{{ product.selected_or_first_available_variant.price| money }}"
+                        />
+                        {% endif %}
+                        
+                        </div>
+                        <div class="bundle_product_image">
+                        <img class="bundle_image" src="{{ product.featured_media | img_url: '100x100'}}"/>
+                        </div>
+                        <div class="bundle_content " >
+                        <label for="checkbox_option_bundle-{{ forloop.index }}">
+                            <div class="bundle_title">
+                                <p class="bundle_product_title" style="margin:0">{{ product.title }}</p>
+                                <span class="preview_price-{{ forloop.index }}">{{ product.selected_or_first_available_variant.price |  money }}</span>
+                                {% if product.available == false %}
+                                {% if section.settings.message != blank %}
+                                <br>  <b style="color:{{ section.settings.message_color}}">{{ section.settings.message}}</b>  
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </label>
+                        {% if product.variants.size > 1 %}
+                            <div id="bundle_variant_select-{{ forloop.index }}" {% if product.metafields.custom.lock_product_in_bundle_kit == true %}style="display:block;" {% else %} style="display:none;"{% endif %} > 
+                                {% if product.metafields.custom.bundle_variant_1 != blank %}
+                                    <h4 class="options-title">{{ product.metafields.custom.bundle_variant_1 }} </h4>
+                                {% endif %}
+                                <div class="form__select select">
+                                    <select  id="input_select_{{ forloop.index }}" class="select__select bundle_select" data-select-id="{{ forloop.index }}" style="padding: 5px 15px 5px;">
+                                    {% if product.metafields.custom.lock_product_in_bundle_kit == true %}
+                                        <option value="" selected disabled>Select Variant</option>
+                                    {% endif %}
+                                    {% for bundle_variant in product.variants %}
+                                        <option  {{ bundle_variant.available }}
+                                            {% if bundle_variant.available == false %}disabled{% endif %} 
+                                            {% if product.metafields.custom.lock_product_in_bundle_kit == false %}
+                                            {% if bundle_variant.id == product.selected_or_first_available_variant.id  %} selected {% endif %}
+                                            {% endif %}
+                                            value="{{ bundle_variant.id }}" 
+                                            data-bundle-variant="{{ bundle_variant.price |  money }}"
+                                        >
+                                            {{bundle_variant.title}}
+                                        </option>
+                                    {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        {% endif %}
+                        </div>
+                    </div>
+    
+                    <div class="quantity_bundle">
+                        <div class="quantity_selector">
+                        {% render 'product-quantity-variant',
+                            id_field: forloop.index,
+                            is_available:product.available ,
+                            current_variant: product.selected_or_first_available_variant.id ,
+                            qty_style: '1',
+                            quantity_label: product.metafields.custom.quantity_label,
+                            current_price: product.selected_or_first_available_variant.price,
+                            check_hidden: false,
+                            quantity_stt: 2
+                        %}
+                        </div> 
+                    </div>
+                </div>
+                {% else %}
+                    {% assign has_not_on_the_car = true %}
+                {% endif %}
+            {% endfor %}
+            </div>
+            <div class="not-on-the-car">
+            {% if selected_collection.products != blank and has_not_on_the_car and request.path != '/pages/build-your-oil-kit' %}
+                <h3>Products no longer on {{ section.settings.build_name }}</h3>
+            {% endif %}
+            {% for product in selected_collection.products %}
+                {% if product.metafields.custom.on_the_car == false %}
+                <div class="bundle_item {% if product.available == false %}product_out_of_stock{% endif %}">
+                    <div class="view_reason_container" data-id="{{ forloop.index }}" >
+                    
+                        <div class="info-icon">
+                        
+                        <img   src="{{ section.settings.info_icon | img_url : '15x15' }}"  width="15px";
+                            
+                            height="15px">
+                        {% comment %} {%  render 'info-icon' %} {% endcomment %}
+                        
+                        
+                        {% comment %} {{page.metafields.custom.reason.value }} {% endcomment %}
+                        
+                            {% for reason in page.metafields.custom.reason.value %}
+                        
+                                {% if  reason.which_page.value.handle  == page.handle %}
+                                    {% if reason.product.value.handle ==  product.handle %}
+                                    <div  class="reason_container" id="modal_{{ forloop.index }}">
+                                    {{ reason.reason.value }}
+                                    </div>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        
+                        </div>
+                        
+                
+                    </div>
+                    <div class="bundle_item_container">
+                        <div class="bundle_check">
+                        {% if product.available == true %}
+                        <input  data-variant-quantity="1" {% if product.metafields.custom.lock_product_in_bundle_kit == true %}disabled checked{% endif %} onclick="toggleBYKCheckbox(this)" 
+                            {% if product.available == false %}disabled{% endif %}
+                    
+                            {% if product.available == true %} data-qty="bundle_variant_qty-{{ forloop.index }}" {% endif %} 
+                            {% if product.available == true %}
+                            data-checkoption="checkbox_option_bundle_{{ forloop.index }}_quantity" 
+                            data-dropdown="bundle_variant_select-{{ forloop.index }}" {% endif %} 
+                            type="checkbox" 
+                            data-check-id="{{ forloop.index }}"
+                            style="display:block !important;" 
+                            class="bundle_checkbox_optionBYK checkbox_option_bundle-{{ forloop.index }} {% if product.variants.size > 1 %}have_variant{% endif %}"  
+                            {% if product.variants.size > 1 %}
+                                {% if product.metafields.custom.lock_product_in_bundle_kit == false or  product.metafields.custom.lock_product_in_bundle_kit == blank %} 
+                                value="{{ product.selected_or_first_available_variant.id }}"
+                                {% else %}
+                                value=""
+                                {% endif %} 
+                            {% else %}
+                            value="{{ product.selected_or_first_available_variant.id }}" 
+                        {% endif %}
+                            data-product-price="{{ product.selected_or_first_available_variant.price | money }}"
+                            data-product-prevprice="{{ product.selected_or_first_available_variant.price| money }}"
+                        />
+                        {% endif %}
+                        
+                        </div>
+                        <div class="bundle_product_image">
+                        <img class="bundle_image" src="{{ product.featured_media | img_url: '100x100'}}"/>
+                        </div>
+                        <div class="bundle_content " >
+                        <label for="checkbox_option_bundle-{{ forloop.index }}">
+                            <div class="bundle_title">
+                                <p class="bundle_product_title" style="margin:0">{{ product.title }}</p>
+                                <span class="preview_price-{{ forloop.index }}">{{ product.selected_or_first_available_variant.price |  money }}</span>
+                                {% if product.available == false %}
+                                {% if section.settings.message != blank %}
+                                <br>  <b style="color:{{ section.settings.message_color}}">{{ section.settings.message}}</b>  
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </label>
+                        {% if product.variants.size > 1 %}
+                            <div id="bundle_variant_select-{{ forloop.index }}" {% if product.metafields.custom.lock_product_in_bundle_kit == true %}style="display:block;" {% else %} style="display:none;"{% endif %} > 
+                                {% if product.metafields.custom.bundle_variant_1 != blank %}
+                                    <h4 class="options-title">{{ product.metafields.custom.bundle_variant_1 }} </h4>
+                                {% endif %}
+                                <div class="form__select select">
+                                    <select  id="input_select_{{ forloop.index }}" class="select__select bundle_select" data-select-id="{{ forloop.index }}" style="padding: 5px 15px 5px;">
+                                    {% if product.metafields.custom.lock_product_in_bundle_kit == true %}
+                                        <option value="" selected disabled>Select Variant</option>
+                                    {% endif %}
+                                    {% for bundle_variant in product.variants %}
+                                        <option  {{ bundle_variant.available }}
+                                            {% if bundle_variant.available == false %}disabled{% endif %} 
+                                            {% if product.metafields.custom.lock_product_in_bundle_kit == false %}
+                                            {% if bundle_variant.id == product.selected_or_first_available_variant.id  %} selected {% endif %}
+                                            {% endif %}
+                                            value="{{ bundle_variant.id }}" 
+                                            data-bundle-variant="{{ bundle_variant.price |  money }}"
+                                        >
+                                            {{bundle_variant.title}}
+                                        </option>
+                                    {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        {% endif %}
+                        </div>
+                    </div>
+    
+                    <div class="quantity_bundle">
+                        <div class="quantity_selector">
+                        {% render 'product-quantity-variant',
+                            id_field: forloop.index,
+                            is_available:product.available ,
+                            current_variant: product.selected_or_first_available_variant.id ,
+                            qty_style: '1',
+                            quantity_label: product.metafields.custom.quantity_label,
+                            current_price: product.selected_or_first_available_variant.price,
+                            check_hidden: false,
+                            quantity_stt: 2
+                        %}
+                        </div> 
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+            </div>
+        {% endpaginate %}
+        {% elsif section.settings.product_list %}
+        {% for product in section.settings.product_list %}
+        
+            <div class="bundle_item {% if product.available == false %}product_out_of_stock{% endif %}">
+                <div class="view_reason_container" data-id="{{ forloop.index }}" >
+                
+                    <div class="info-icon">
+                    
+                    <img   src="{{ section.settings.info_icon | img_url : '15x15' }}"  width="15px";
+                        
+                        height="15px">
+                    {% comment %} {%  render 'info-icon' %} {% endcomment %}
+                    
+                    
+                    {% comment %} {{page.metafields.custom.reason.value }} {% endcomment %}
+                        
+                        {% for reason in page.metafields.custom.reason.value %}
+                        
+                            {% if  reason.which_page.value.handle  == page.handle %}
+                                {% if reason.product.value.handle ==  product.handle %}
+                                <div  class="reason_container" id="modal_{{ forloop.index }}">
+                                {{ reason.reason.value }}
+                                </div>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    
+                    </div>
+                    
+                
+                </div>
+                <div class="bundle_item_container">
+                    <div class="bundle_check">
+                    {% if product.available == true %}
+                    <input  data-variant-quantity="1" {% if product.metafields.custom.lock_product_in_bundle_kit == true %}disabled checked{% endif %} onclick="toggleBYKCheckbox(this)" 
+                        {% if product.available == false %}disabled{% endif %}
+                
+                        {% if product.available == true %} data-qty="bundle_variant_qty-{{ forloop.index }}" {% endif %} 
+                        {% if product.available == true %}
+                        data-checkoption="checkbox_option_bundle_{{ forloop.index }}_quantity" 
+                        data-dropdown="bundle_variant_select-{{ forloop.index }}" {% endif %} 
+                        type="checkbox" 
+                        data-check-id="{{ forloop.index }}"
+                        style="display:block !important;" 
+                        class="bundle_checkbox_optionBYK checkbox_option_bundle-{{ forloop.index }} {% if product.variants.size > 1 %}have_variant{% endif %}"  
+                        {% if product.variants.size > 1 %}
+                            {% if product.metafields.custom.lock_product_in_bundle_kit == false or  product.metafields.custom.lock_product_in_bundle_kit == blank %} 
+                            value="{{ product.selected_or_first_available_variant.id }}"
+                            {% else %}
+                            value=""
+                            {% endif %} 
+                        {% else %}
+                        value="{{ product.selected_or_first_available_variant.id }}" 
+                    {% endif %}
+                        data-product-price="{{ product.selected_or_first_available_variant.price | money }}"
+                        data-product-prevprice="{{ product.selected_or_first_available_variant.price| money }}"
+                    />
+                    {% endif %}
+                    
+                    </div>
+                    <div class="bundle_product_image">
+                    <img class="bundle_image" src="{{ product.featured_media | img_url: '100x100'}}"/>
+                    </div>
+                    <div class="bundle_content " >
+                    <label for="checkbox_option_bundle-{{ forloop.index }}">
+                        <div class="bundle_title">
+                            <p class="bundle_product_title" style="margin:0">{{ product.title }}</p>
+                            <span class="preview_price-{{ forloop.index }}">{{ product.selected_or_first_available_variant.price |  money }}</span>
+                            {% if product.available == false %}
+                            {% if section.settings.message != blank %}
+                            <br>  <b style="color:{{ section.settings.message_color}}">{{ section.settings.message}}</b>  
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </label>
+                    {% if product.variants.size > 1 %}
+                        <div id="bundle_variant_select-{{ forloop.index }}" {% if product.metafields.custom.lock_product_in_bundle_kit == true %}style="display:block;" {% else %} style="display:none;"{% endif %} > 
+                            {% if product.metafields.custom.bundle_variant_1 != blank %}
+                                <h4 class="options-title">{{ product.metafields.custom.bundle_variant_1 }} </h4>
+                            {% endif %}
+                            <div class="form__select select">
+                                <select  id="input_select_{{ forloop.index }}" class="select__select bundle_select" data-select-id="{{ forloop.index }}" style="padding: 5px 15px 5px;">
+                                {% if product.metafields.custom.lock_product_in_bundle_kit == true %}
+                                    <option value="" selected disabled>Select Variant</option>
+                                {% endif %}
+                                {% for bundle_variant in product.variants %}
+                                    <option  {{ bundle_variant.available }}
+                                        {% if bundle_variant.available == false %}disabled{% endif %} 
+                                        {% if product.metafields.custom.lock_product_in_bundle_kit == false %}
+                                        {% if bundle_variant.id == product.selected_or_first_available_variant.id  %} selected {% endif %}
+                                        {% endif %}
+                                        value="{{ bundle_variant.id }}" 
+                                        data-bundle-variant="{{ bundle_variant.price |  money }}"
+                                    >
+                                        {{bundle_variant.title}}
+                                    </option>
+                                {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    {% endif %}
+                    </div>
+                </div>
+
+                <div class="quantity_bundle">
+                    <div class="quantity_selector">
+                    {% render 'product-quantity-variant',
+                        id_field: forloop.index,
+                        is_available:product.available ,
+                        current_variant: product.selected_or_first_available_variant.id ,
+                        qty_style: '1',
+                        quantity_label: product.metafields.custom.quantity_label,
+                        current_price: product.selected_or_first_available_variant.price,
+                        check_hidden: false,
+                        quantity_stt: 2
+                    %}
+                    </div> 
+                </div>
+            </div>
+        {% endfor %}
+        {% endif %}
+        
+    </div>
+    <div class="byk_add_to_cart">
+        <div class="byk_product_subtotal">
+        <span class="text">Subtotal: </span>
+        <span id="byk_sub_total_price" class="money-subtotals">0</span>
+        </div>
+
+        <button type="button" id="byk_add_btn" class="product-form__submit button button--primary">
+        ADD ITEMS TO CART
+        </button>
+    </div>
+</div>

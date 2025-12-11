@@ -1,0 +1,60 @@
+{%- assign assets_url = 'product-1.png' | asset_img_url: '50x' | split: 'product-1_50x.png' -%}
+<script>
+  window.GPOConfigs = window.GPOConfigs || {}
+  window.GPOConfigs.appUrl = "https://option.globosoftware.net"
+  window.GPOConfigs.assetsUrl = '{{ assets_url[0] }}'
+  window.GPOConfigs.shopifyRoot = Shopify?.routes?.root ? Shopify?.routes?.root : (Shopify?.routes?.root_url ? Shopify?.routes?.root_url : '/')
+  window.GPOConfigs.themeInfo = {"theme_store_id":null,"theme_name":"Ella","theme_version":"6.5.3"}
+  window.GPOConfigs.theme = {"product":{"form":["[data-gpo-product-form]",".home-product form[action*=\"\/cart\/add\"]",".shop-product form[action*=\"\/cart\/add\"]","#shopify-section-featured-product form[action*=\"\/cart\/add\"]","form.apb-product-form","[data-gpo-theme-store-id=\"141\"] .product__section--form > form[action*=\"\/cart\/add\"]","[data-gpo-theme-store-id=\"450\"] .productoptions form[action=\"\/cart\/add\"]","[data-gpo-theme-store-id=\"568\"] .buy-buttons-row form[action*=\"\/cart\/add\"]","[data-gpo-theme-store-id=\"686\"] .product-form form[action*=\"\/cart\/add\"]","[data-gpo-theme-store-id=\"714\"] .product-form__buy-buttons form[action*=\"\/cart\/add\"]","[data-gpo-theme-store-id=\"859\"] .form-vertical form[action*=\"\/cart\"]","[data-gpo-theme-store-id=\"863\"] .product-detail__detail > form[action*=\"\/cart\/add\"]","product-form form[action*=\"\/cart\/add\"]",".product-page form[action*=\"\/cart\/add\"]",".product-add form[action*=\"\/cart\/add\"]","[id*=\"ProductSection--\"] form[action*=\"\/cart\/add\"]","form#add-to-cart-form","form.sf-cart__form","form.productForm","form.product-form","form.product-single__form","form.shopify-product-form","form.atc-form","form.atc-form-mobile","form[action*=\"\/cart\/add\"]:not([hidden])"],"unitPrice":"[data-gpo-product-unit-price], .lh-price, .product .prices .price, .product .total-price .total-money","compareAtPrice":"[data-gpo-product-compare-at-price], .lh-compare-at-price, .product .prices .compare-price","variantWrapper":"[data-gpo-product-variant-wrapper], #product-variants","variantSelector":"[name=id]","variantActivator":"#product-variants .swatch input, .quantity_selector button, .quantity_selector input","quantity":"[data-gpo-product-quantity], [name=qty], [name=quantity]","addToCartButton":"[type=submit]","paymentButton":"[data-shopify=payment-button]","addToCart":{"excludedAttrs":[{"key":"data-btn-addtocart","value":""},{"key":"data-grouped-addtocart","value":""}]}},"collection":[],"quickView":[],"cart":{"page":{"lineItem":{"key":".cart-template .cart-form .cart-list .cart-product-item, .halo-cart-content .cart-item","unitPrice":".cart--price span, [data-item-final-price-display]","totalPrice":".cart--total span, [data-item-price-with-quantity-display]"},"subtotalPrice":".cart-template .total .price, .cart-total-value","checkoutBtn":".cart-template .cart-form .btn-checkout, .cart-actions .button-checkout","discountBox":"[data-gpo-cart-discount-box]"},"drawer":[{"lineItem":{"key":"#dropdown-cart .mini-products-list .item","unitPrice":".cart-collateral .price","totalPrice":"[data-gpo-drawer-line-item-total-price]"},"subtotalPrice":"#dropdown-cart .total .price","checkoutBtn":"#dropdown-cart .actions .btn-checkout"}]},"theme_store_id":null,"theme_name":"Ella"}
+  {% raw %}
+  window.GPOConfigs.shop = { id: 6118, url: 'kies-motorsports-llc.myshopify.com', settings: {"general":[],"display":{"show_tooltip":true},"price":{"seperator":"\u2192","label_addon":"(+ {{addon}})","show_for_input":true,"show_for_option":true,"show_addon_message":true,"add_addon_to_product_price":true,"hide_additional_payment_button":true,"show_discount_box_on_cart":true,"taxable":true},"translation":{"selection_will_add":"Selection will add {{addon}} to the price","custom_product_name":"{{product_title}} - Selections","discount_label":"Discount","discount_placeholder":"Enter a discount code","discount_apply_button":"Apply","discount_applied":"Discount Applied","discount_not_exist":"Enter a valid discount code","discount_not_valid":"Discount code isn\u2019t valid for the items in your cart"}} }
+  {% endraw %}
+  
+  window.GPOConfigs.money_format = "{{ shop.money_format | replace: '"', "'" }}"
+  window.GPOConfigs.product = {% if product %}{{ product | json }}{% else %}false{% endif %}
+  window.GPOConfigs.product.collections = {% if product %}{{ product.collections | map: 'id' | json }}{% else %}false{% endif %}
+  window.GPOConfigs.customer = {% if customer %}{ id: '{{ customer.id }}', name: '{{ customer.name }}', email: '{{ customer.email }}' }{% else %}false{% endif %}
+  window.GPOConfigs.cart = {% if cart %}{{ cart | json }}{% else %}false{% endif %}
+  window.GPOConfigs.page = { type: '{{ request.page_type }}' }
+  
+  GPOConfigs.options = []
+</script>
+<script src="{{ 'globo.options.data.min.js' | asset_url }}"></script>
+{% capture GPO_appScript %}{{ 'globo.options.index.min.js' | asset_url }}{% endcapture %}
+{% assign GPO_assetsPath = GPO_appScript | split: 'globo.options.index.min.js' | first %}
+<script>GPOConfigs.__webpack_public_path__ = "{{ GPO_assetsPath }}globo.options."</script>
+<script src="{{GPO_appScript}}" async></script>
+<style>
+  .gpo-original-shopify-button,
+  a.gpo-original-shopify-button,
+  button.gpo-original-shopify-button,
+  input.gpo-original-shopify-button,
+  input#addToCart.gpo-original-shopify-button {
+    display: none !important;
+  }
+  [data-gpo-is-enabled=true] .shopify-payment-button .shopify-payment-button__button--unbranded,
+  [data-gpo-is-enabled=true][data-gpo-cart-hide-additional-payment-button=true] [data-shopify=dynamic-checkout-cart],
+  [data-gpo-is-enabled=true][data-gpo-product-hide-additional-payment-button=true] [data-shopify=payment-button] {
+    display: none !important;
+  }
+  .gpo-original-checkout-button,
+  a.gpo-original-checkout-button,
+  button.gpo-original-checkout-button,
+  input.gpo-original-checkout-button {
+    display: none !important;
+  }
+  a.gpo-clone-checkout-button,
+  button.gpo-clone-checkout-button,
+  input.gpo-clone-checkout-button {
+    cursor: pointer !important;
+  }
+  #mini-cart form.cart a.gpo-clone-checkout-button,
+  .cart-flyout a.gpo-clone-checkout-button {
+    display: block !important;
+  }
+  .gpo-hidden {
+    display: none !important;
+    opacity: 0 !important;/
+    visibility: hidden !important;
+  }
+</style>
