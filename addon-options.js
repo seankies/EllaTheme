@@ -244,7 +244,4 @@
     document.addEventListener('shopify:section:reorder', initAddonOptions);
   }
 
-  // Also reinitialize on general section load events
-  document.addEventListener('shopify:section:load', initAddonOptions);
-
 })();

@@ -13,15 +13,7 @@
   assign spacing_bottom = block.settings.spacing_bottom | default: 15
 -%}
 
-{%- assign has_addons = false -%}
-{%- for sub_block in block.settings.blocks -%}
-  {%- if sub_block.settings.product != blank -%}
-    {%- assign has_addons = true -%}
-    {%- break -%}
-  {%- endif -%}
-{%- endfor -%}
-
-{%- if block.settings.blocks.size > 0 or block.settings.product_1 != blank -%}
+{%- if block.settings.product_1 != blank -%}
   <div id="addon-options-{{ section.id }}-{{ block.id }}" 
        class="addon-options productView-moreItem"
        style="--spacing-top: {{ spacing_top | append: 'px' }}; --spacing-bottom: {{ spacing_bottom | append: 'px' }}"
@@ -36,9 +28,7 @@
     {%- endif -%}
     
     <div class="addon-options__list addon-options__list--columns-{{ column_count }}">
-      {%- comment -%} Support both new block-based and legacy settings-based config {%- endcomment -%}
-      
-      {%- comment -%} Check for up to 10 product settings (legacy format) {%- endcomment -%}
+      {%- comment -%} Check for up to 10 product settings {%- endcomment -%}
       {%- for i in (1..10) -%}
         {%- capture product_key -%}product_{{ i }}{%- endcapture -%}
         {%- capture variant_key -%}variant_id_{{ i }}{%- endcapture -%}
