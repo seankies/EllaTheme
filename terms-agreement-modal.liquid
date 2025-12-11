@@ -1,0 +1,299 @@
+<!-- Rex & Sean - HI! -->
+
+<!-- EmailJS library -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script type="text/javascript">
+  (function(){
+    emailjs.init("P5MAZYY9BWacu1Ehv");
+  })();
+</script>
+
+<style>
+  .terms-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 9999;
+    overflow-y: auto;
+  }
+
+  .terms-modal-overlay.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .terms-modal {
+    background: white;
+    max-width: 800px;
+    width: 100%;
+    border-radius: 8px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .terms-header {
+    padding: 20px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 10;
+  }
+
+  .terms-content {
+    padding: 30px;
+  }
+
+  .warning-box {
+    background: #1a1a1a;
+    color: white;
+    padding: 20px;
+    border-radius: 5px;
+    margin: 20px 0;
+  }
+
+  .warning-box .warning-title {
+    color: #ff4444;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  .checkbox-container {
+    display: flex;
+    align-items: start;
+    margin: 20px 0;
+    cursor: pointer;
+  }
+
+  .checkbox-container input[type="checkbox"] {
+    appearance: auto !important;
+    -webkit-appearance: checkbox !important;
+    -moz-appearance: checkbox !important;
+    opacity: 1 !important;
+    position: static !important;
+    width: 20px !important;
+    height: 20px !important;
+    margin-right: 10px !important;
+    margin-top: 3px !important;
+    cursor: pointer !important;
+    flex-shrink: 0 !important;
+    display: inline-block !important;
+    visibility: visible !important;
+  }
+  
+  .checkbox-container span {
+    flex: 1;
+  }
+
+  .form-group {
+    margin: 20px 0;
+  }
+
+  .form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .signature-pad {
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    background: white;
+    cursor: crosshair;
+    touch-action: none;
+    display: block;
+    max-width: 100%;
+  }
+  
+  .signature-container {
+    position: relative;
+    width: 100%;
+    min-height: 200px;
+  }
+
+  .signature-placeholder {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #999;
+    pointer-events: none;
+  }
+
+  .clear-signature {
+    margin-top: 10px;
+    color: #0066cc;
+    text-decoration: underline;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: 14px;
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 15px;
+    font-weight: bold;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background 0.3s;
+  }
+
+  .submit-btn.enabled {
+    background: #28a745;
+    color: white;
+  }
+
+  .submit-btn.enabled:hover {
+    background: #218838;
+  }
+
+  .submit-btn.disabled {
+    background: #ccc;
+    color: #666;
+    cursor: not-allowed;
+  }
+
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+  }
+
+  .warning-box h4 {
+    color: red;
+  }
+</style>
+
+<div id="termsModalOverlay" class="terms-modal-overlay">
+  <div class="terms-modal">
+    <div class="terms-header">
+      <h2>TERMS (REQUIRED)</h2>
+      <button class="close-btn" onclick="closeTermsModal()">×</button>
+    </div>
+    
+    <div class="terms-content">
+      <!-- OFF-ROAD USE POLICY -->
+      <div class="warning-box">
+        <div class="warning-title">OFF-ROAD USE POLICY & EMISSIONS COMPLIANCE NOTICE</div>
+        
+        <h4 style="margin-top:10px;">California Proposition 65 Warning:</h4>
+        <p style="font-size:14px;line-height:1.5;">
+          This product can expose you to chemicals such as lead and lead compounds, which are known to the State of California to cause cancer or birth defects or other reproductive harm.
+          For more information, visit 
+          <a href="https://www.p65warnings.ca.gov" target="_blank" style="color:#6eb3ff;">www.P65Warnings.ca.gov</a>.
+        </p>
+        <p style="font-size:14px;line-height:1.5;">
+          For a complete list of chemicals known to cause harm, visit 
+          <a href="https://www.p65warnings.ca.gov/chemicals" target="_blank" style="color:#6eb3ff;">https://www.p65warnings.ca.gov/chemicals</a>.
+        </p>
+
+        <h4 style="margin-top:15px;">EPA / CARB Compliance & Legal Use:</h4>
+        <p style="font-size:14px;line-height:1.5;">
+          Under the federal Clean Air Act (42 U.S.C. §7522(a)(3)), it is <strong>illegal</strong> to manufacture, sell, install, or use any part that defeats or alters a motor vehicle’s emission control system for use on public roads.
+          Unless a product has received an Executive Order (EO) from the California Air Resources Board (CARB), it is not legal for use or installation on any pollution-controlled vehicle driven on public highways.
+        </p>
+        <ul style="font-size:14px;line-height:1.5;margin-left:20px;">
+          <li>Civil penalties up to <strong>$4,819 per violation per vehicle</strong></li>
+          <li>Possible criminal penalties under the Clean Air Act</li>
+          <li>Revocation of registration or smog certification by DMV or local authorities</li>
+        </ul>
+
+        <h4 style="margin-top:15px;">State & Local Regulations:</h4>
+        <p style="font-size:14px;line-height:1.5;">
+          Some states have CARB-equivalent or independent emissions laws. Customers are responsible for verifying local regulations before purchasing or installing emissions-related products.
+        </p>
+
+        <h4 style="margin-top:15px;">Intended Use & Customer Certification:</h4>
+        <p style="font-size:14px;line-height:1.5;">
+          All performance, racing, or competition parts sold by this company are intended solely for off-road, closed-course, or competition use on vehicles that are never registered or used on public highways.
+        </p>
+      </div>
+
+      <!-- Required Acknowledgements -->
+      <label class="checkbox-container">
+        <input type="checkbox" id="check1">
+        <span>I have read and understood the California Proposition 65 Warning.</span>
+      </label>
+      <label class="checkbox-container">
+        <input type="checkbox" id="check2">
+        <span>I have read and understood the EPA/CARB Compliance Notice.</span>
+      </label>
+      <label class="checkbox-container">
+        <input type="checkbox" id="check3">
+        <span>I understand these products are intended for off-road or competition use only.</span>
+      </label>
+      <label class="checkbox-container">
+        <input type="checkbox" id="check4">
+        <span>I acknowledge that it is my responsibility to comply with all federal, state, and local emissions laws.</span>
+      </label>
+      <label class="checkbox-container">
+        <input type="checkbox" id="check5">
+        <span>I understand that installation or use on a public road vehicle is a violation of the Clean Air Act and may subject me to personal liability.</span>
+      </label>
+
+      <!-- Company Policy -->
+      <div class="warning-box" style="background:#f9f9f9;color:#000;">
+        <h4>Company Policy Statement</h4>
+        <p style="font-size:14px;line-height:1.5;">
+          Kies Motorsports, LLC sells and markets these products for lawful use only.
+          We do not condone or authorize the use of emission-control defeat devices or any modification that violates the Clean Air Act or state regulations.
+        </p>
+      </div>
+
+      <!-- Form Fields -->
+      <div class="form-group">
+        <label>Full Name:</label>
+        <input type="text" id="fullName" placeholder="Enter your full name">
+      </div>
+
+      <div class="form-group">
+        <label>Email:</label>
+        <input type="email" id="termsEmail" placeholder="Enter your email">
+      </div>
+
+      <div class="form-group">
+        <label>Vehicle Year, Make, Model:</label>
+        <input type="text" id="vehicleInfo" placeholder="e.g., 2015 BMW M3">
+      </div>
+
+      <!-- Signature -->
+      <div class="form-group">
+        <label>Signature:</label>
+        <div class="signature-container">
+          <canvas id="signaturePad" class="signature-pad" width="700" height="200"></canvas>
+          <div id="signaturePlaceholder" class="signature-placeholder">Sign here with your mouse or finger</div>
+        </div>
+        <button class="clear-signature" onclick="clearSignature()">Clear Signature</button>
+      </div>
+
+      <button id="submitTerms" class="submit-btn disabled" onclick="submitTerms()">
+        COMPLETE ALL FIELDS TO CONTINUE
+      </button>
+    </div>
+  </div>
+</div>
+
+{{ 'terms-agreement.js' | asset_url | script_tag }}

@@ -1,0 +1,30 @@
+{% comment %}
+Product Add-ons Block - Complete implementation
+{% endcomment %}
+
+{% assign addon_products = block.settings.addon_products | split: ',' %}
+{% if addon_products. size > 0 %}
+<div id="product-addons-{{ section.id }}" class="product-addons">
+  <h4 class="product-addons__title">{{ block.settings.addons_title | default: 'Add-ons' }}</h4>
+  <div class="product-addons__list">
+    {% for addon_handle in addon_products %}
+      {% assign addon_handle = addon_handle | strip %}
+      {% assign addon = all_products[addon_handle] %}
+      {% if addon and addon.available %}
+        {% assign addon_variant = addon.selected_or_first_available_variant %}
+        <label class="product-addons__item">
+          <input
+            type="checkbox"
+            class="product-addons__checkbox"
+            data-addon-variant-id="{{ addon_variant.id }}"
+            data-addon-price="{{ addon_variant.price }}"
+            data-addon-title="{{ addon.title | escape }}"
+          />
+          <span class="product-addons__label">{{ addon.title }}</span>
+          <span class="product-addons__price">+ {{ addon_variant. price | money }}</span>
+        </label>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+{% endif %}

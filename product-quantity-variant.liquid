@@ -1,0 +1,24 @@
+{%- if qty_style == '1' -%}
+    <quantity-bundle class="productView-quantity quantity__group quantity__group--{{ quantity_stt }} quantity__style--{{ qty_style }} clearfix{% if check_hidden %} hidden{% endif %}">
+        <label class="form-label quantity__label" for="quantity-{{ product.id }}{%- if quantity_stt > 1 -%}-{{ quantity_stt }}{%- endif -%}">
+            {{ 'products.product.quantity.label__2' | t }}
+        </label>
+        <div class="quantity__container">
+            <button {%  if is_available == false %}disabled{% endif %} type="button" name="minus" class="minus btn-quantity button_bundle">
+                <span class="visually-hidden">{{ 'products.product.quantity.decrease' | t: product: product.title | escape }}</span>
+            </button>
+            <input class="form-input quantity__input variant_quantity_option checkbox_option_bundle_{{ id_field }}_quantity" id="checkbox_option_bundle_{{ id_field }}_quantity" data-variant-price="{{current_price |  money_without_currency }}" data-order-id="{{id_field}}" id="" type="number" name="quantity" min="1" {% if is_available == false %}readonly{% endif %} value="{%  if is_available == false %}0{% else %}1{% endif %}" inputmode="numeric" pattern="[0-9]*" id="quantity-{{ product.id }}{%- if quantity_stt > 1 -%}-{{ quantity_stt }}{%- endif -%}" data-product="{{ product.id }}" data-price="{{ current_variant.price }}">
+            <button {%  if is_available == false %}disabled{% endif %} type="button" name="plus" class="plus btn-quantity button_bundle">
+                <span class="visually-hidden">{{ 'products.product.quantity.increase' | t: product: product.title | escape }}</span>
+            </button>
+        </div>
+    </quantity-bundle>
+    {%- elsif qty_style == '2' -%}
+    <quantity-bundle class="productView-quantity quantity__group quantity__group--{{ quantity_stt }} quantity__style--{{ qty_style }} clearfix{% if check_hidden %} hidden{% endif %}">
+        <label class="form-label quantity__label" for="quantity-{{ product.id }}{%- if quantity_stt > 1 -%}-{{ quantity_stt }}{%- endif -%}">
+            {{ 'products.product.quantity.label__2' | t }}
+        </label>
+        <input class="form-input quantity__input" type="number" name="quantity" min="1" value="1" inputmode="numeric" pattern="[0-9]*" id="quantity-{{ product.id }}{%- if quantity_stt > 1 -%}-{{ quantity_stt }}{%- endif -%}" data-product="{{ product.id }}" data-price="{{ current_variant.price }}">
+    </quantity-bundle>
+    {%- endif -%}
+    

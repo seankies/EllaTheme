@@ -1,0 +1,91 @@
+
+
+<variant-selects asas class="no-js-hidden product-option has-default" data-product="{{ product.id }}" data-section="{{ section.id }}" data-url="{{ product.url }}">
+    {%- for option in product.options_with_values -%}
+        {% if option.position == 1 %}
+        <div class="product-form__input product-form__input--dropdown" data-product-attribute="set-select" data-option-index="{{ forloop.index0 }}">
+            <h4 class="options-title">{{ product.metafields.custom.bundle_variant_1 }} </h4>
+            <div class="form__select select">
+                <select id="option-{{ forloop.index0 }}"
+                    class="select__select"
+                    name="options[{{ option.name | escape }}]"
+                >
+                <option selected disabled>Select {{ option.name }}</option>
+                {%- for value in option.values -%}
+                <option value="{{ value | escape }}" {% if option.selected_value == value %}selected="selected"{% endif %}>
+                    {{ value }}
+                </option>
+            {%- endfor -%}
+                </select>
+            </div>
+        </div>
+        {% endif %}
+    {%- endfor -%}
+    {% if product.metafields.custom.more_than_variant %}
+        <div class="custom_variant_container">
+            {% for custom_product_variant in product.metafields.custom %}
+                {% assign title = 'product_variant_title_' | append: forloop.index %}
+                {% assign key = 'product_variant_' | append: forloop.index %}
+                {% if product.metafields.custom[key] %}
+                    <div class="custom_option_container">
+                        <label class="form__label" for="{{ product.metafields.custom[title] | handle }}">
+                            {{ product.metafields.custom[title] }}:
+                            <span id="variant_current_{{forloop.index}}"></span>    
+                        </label>
+                        <div class="form__select select">
+                            <select id="variant_{{ forloop.index }}" titp class="select__select select-{{ title | handle }}">
+                                {% for product_variant in product.metafields.custom[key].value %}
+                                <option {% if forloop.index == 1 %}selected {% endif %}value="{{ product_variant }}">{{ product_variant }}</option> 
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                {% endif %} 
+            {% endfor %}
+        </div>
+    {% endif %}
+  
+    <script type="application/json">
+        {{ product.variants | json }}
+    </script>
+</variant-selects>
+
+{% for product_option in product.options_with_values %} 
+    {% if product_option.position == 2 %}
+        <h4 class="options-title">{{ product.metafields.custom.bundle_variant_2 }} </h4>
+    <div class="options-values">
+      {% for value in product_option.values %}
+    <div>
+    <input  class="bundle_radio_option" type="radio" id = "{{ value }}" name="{{ product_option.name}}" value="{{ value }}" >
+        <label for="{{ value }}">{{ value }}</label>  
+    </div>
+
+      {% endfor %}
+    </div>
+    <div class="line"></div>
+{% elsif product_option.position == 3 %}
+    <h4 class="options-title">{{ product.metafields.custom.bundle_variant_3 }} </h4>
+    <div class="options-values">
+     
+
+
+{% comment %} <input type="number" id="tentacles" name="tentacles" 
+{% for value in product_option.values %}
+{% if forloop.first %}
+min="{{ value }}" 
+{% endif %}
+{% if forloop.last %}
+max="{{value}}"     
+{% endif %}
+{% endfor %}/> {% endcomment %}
+       {% for value in product_option.values %}
+        <div>
+        <input  class="bundle_radio_option" type="radio" id = "{{ value }}" name="{{ product_option.name}}" value="{{ value }}" >
+            <label for="{{ value }}">{{ value }}</label>  
+        </div>
+      {% endfor %} 
+    </div>
+    <div class="line"></div>
+{% endif %}
+{% endfor %}
+
