@@ -1,0 +1,107 @@
+{% comment %}
+  Add-on Options Block - Full implementation for Ella theme
+  Renders customizable add-on product options with checkboxes
+{% endcomment %}
+
+{%- liquid
+  assign heading = block.settings.heading | default: 'Add-ons'
+  assign column_count = block.settings.column_count | default: 1
+  assign quantity_behavior = block.settings.quantity_behavior | default: 'fixed'
+  assign after_add_behavior = block.settings.after_add_behavior | default: 'redirect_cart'
+  assign tag_with_main = block.settings.tag_with_main | default: false
+  assign spacing_top = block.settings.spacing_top | default: 0
+  assign spacing_bottom = block.settings.spacing_bottom | default: 15
+-%}
+
+{%- if block.settings.product_1 != blank -%}
+  <div id="addon-options-{{ section.id }}-{{ block.id }}" 
+       class="addon-options productView-moreItem"
+       style="--spacing-top: {{ spacing_top | append: 'px' }}; --spacing-bottom: {{ spacing_bottom | append: 'px' }}"
+       data-quantity-behavior="{{ quantity_behavior }}"
+       data-after-add-behavior="{{ after_add_behavior }}"
+       data-tag-with-main="{{ tag_with_main }}"
+       data-main-product-id="{{ product.id }}"
+       data-main-product-title="{{ product.title | escape }}">
+    
+    {%- if heading != blank -%}
+      <h4 class="addon-options__heading">{{ heading }}</h4>
+    {%- endif -%}
+    
+    <div class="addon-options__list addon-options__list--columns-{{ column_count }}">
+      {%- comment -%} Check for up to 10 product settings {%- endcomment -%}
+      {%- for i in (1..10) -%}
+        {%- capture product_key -%}product_{{ i }}{%- endcapture -%}
+        {%- capture variant_key -%}variant_id_{{ i }}{%- endcapture -%}
+        {%- capture label_key -%}label_override_{{ i }}{%- endcapture -%}
+        {%- capture show_price_key -%}show_price_{{ i }}{%- endcapture -%}
+        {%- capture hide_soldout_key -%}hide_if_soldout_{{ i }}{%- endcapture -%}
+        
+        {%- assign addon_product = block.settings[product_key] -%}
+        
+        {%- if addon_product != blank -%}
+          {%- assign variant_id_setting = block.settings[variant_key] -%}
+          {%- assign label_override = block.settings[label_key] -%}
+          {%- assign show_price = block.settings[show_price_key] -%}
+          {%- if show_price == nil -%}{%- assign show_price = true -%}{%- endif -%}
+          {%- assign hide_if_soldout = block.settings[hide_soldout_key] -%}
+          
+          {%- comment -%} Product picker returns product object directly {%- endcomment -%}
+          {%- assign addon = addon_product -%}
+          
+          {%- if addon and addon.id -%}
+            {%- comment -%} Determine which variant to use {%- endcomment -%}
+            {%- if variant_id_setting != blank and variant_id_setting != '0' -%}
+              {%- assign variant_id_int = variant_id_setting | times: 1 -%}
+              {%- assign addon_variant = nil -%}
+              {%- for variant in addon.variants -%}
+                {%- if variant.id == variant_id_int -%}
+                  {%- assign addon_variant = variant -%}
+                  {%- break -%}
+                {%- endif -%}
+              {%- endfor -%}
+              {%- if addon_variant == nil -%}
+                {%- assign addon_variant = addon.selected_or_first_available_variant -%}
+              {%- endif -%}
+            {%- else -%}
+              {%- assign addon_variant = addon.selected_or_first_available_variant -%}
+            {%- endif -%}
+            
+            {%- comment -%} Check if we should hide sold out items {%- endcomment -%}
+            {%- assign should_show = true -%}
+            {%- if hide_if_soldout and addon_variant.available == false -%}
+              {%- assign should_show = false -%}
+            {%- endif -%}
+            
+            {%- if should_show -%}
+              {%- assign display_label = addon.title -%}
+              {%- if label_override != blank -%}
+                {%- assign display_label = label_override -%}
+              {%- elsif addon.variants.size > 1 and addon_variant.title != 'Default Title' -%}
+                {%- assign display_label = addon.title | append: ' - ' | append: addon_variant.title -%}
+              {%- endif -%}
+              
+              <label class="addon-options__item{% unless addon_variant.available %} addon-options__item--soldout{% endunless %}">
+                <input type="checkbox"
+                       class="addon-options__checkbox"
+                       data-addon-variant-id="{{ addon_variant.id }}"
+                       data-addon-price="{{ addon_variant.price }}"
+                       data-addon-title="{{ display_label | escape }}"
+                       data-addon-product-id="{{ addon.id }}"
+                       {% unless addon_variant.available %}disabled{% endunless %}>
+                <span class="addon-options__label">
+                  {{ display_label }}
+                  {%- unless addon_variant.available -%}
+                    <span class="addon-options__soldout-badge">{{ 'products.product.sold_out' | t }}</span>
+                  {%- endunless -%}
+                </span>
+                {%- if show_price -%}
+                  <span class="addon-options__price">+ {{ addon_variant.price | money }}</span>
+                {%- endif -%}
+              </label>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}
