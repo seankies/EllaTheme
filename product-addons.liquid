@@ -23,9 +23,12 @@ Supports product_list (product picker) and addon_products (handles) for flexibil
   assign should_render = false
   if use_product_list and addon_products.size > 0
     assign should_render = true
-  elsif use_product_list == false and addon_products_handles.size > 0
-    assign should_render = true
   endif
+  unless use_product_list
+    if addon_products_handles.size > 0
+      assign should_render = true
+    endif
+  endunless
 %}
 
 {% if should_render %}
