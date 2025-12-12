@@ -20,7 +20,7 @@ Supports product_list (product picker) and addon_products (handles) for flexibil
   assign layout_style = block.settings.layout_style | default: 'compact'
 %}
 
-{% if use_product_list and addon_products.size > 0 or addon_products_handles.size > 0 %}
+{% if (use_product_list and addon_products.size > 0) or (use_product_list == false and addon_products_handles.size > 0) %}
 <div id="product-addons-{{ section.id }}" class="product-addons addon-options layout-{{ layout_style }}"
      style="--addon-title-color: {{ block.settings.title_color | default: '#232323' }};
             --addon-border-color: {{ block.settings.border_color | default: '#eee' }};
