@@ -81,7 +81,9 @@
   function handleFormSubmit(e) {
     try {
       const form = e.target;
-      const addonsContainer = form.querySelector('[id^="product-addons-"], .addon-options, .product-addons');
+      // Look for add-ons anywhere on the page, not just in the form
+      // This allows add-ons to be rendered as separate blocks
+      const addonsContainer = document.querySelector('[id^="product-addons-"], .addon-options, .product-addons');
       if (!addonsContainer) return;
       
       const checkedAddons = Array.from(addonsContainer.querySelectorAll('.product-addons__checkbox:checked'));
