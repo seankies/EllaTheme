@@ -64,121 +64,48 @@
   }
 
   function initProductAddons() {
-    var productForms = document.querySelectorAll('form[action*="/cart/add"], form.product-form, form[data-product-id]');
+    // Monitor cart updates to detect when main product is added
+    // Works with any cart system (Hulk, native Shopify, AJAX, etc.)
+    observeCartUpdates();
+  }
+
+  var lastCartCount = null;
+  var addonsProcessing = false;
+  
+  function observeCartUpdates() {
+    // Get initial cart count
+    fetchCartCount().then(function(count) {
+      lastCartCount = count;
+    });
     
-    if (!productForms || productForms.length === 0) {
+    // Listen for various cart update events
+    document.addEventListener('cart:updated', handleCartUpdate);
+    document.addEventListener('cart.requestComplete', handleCartUpdate);
+    
+    // Poll cart count periodically as fallback
+    setInterval(function() {
+      fetchCartCount().then(function(count) {
+        if (count !== lastCartCount && count > lastCartCount) {
+          lastCartCount = count;
+          handleCartUpdate();
+        }
+        lastCartCount = count;
+      });
+    }, 500);
+  }
+  
+  function fetchCartCount() {
+    return fetch('/cart.js')
+      .then(function(response) { return response.json(); })
+      .then(function(cart) { return cart.item_count; })
+      .catch(function() { return null; });
+  }
+  
+  function handleCartUpdate() {
+    if (addonsProcessing) {
       return;
     }
     
-    for (var i = 0; i < productForms.length; i++) {
-      var form = productForms[i];
-      if (!form.dataset.addonsInitialized) {
-        form.dataset.addonsInitialized = 'true';
-        form.addEventListener('submit', handleFormSubmit, true); // Use capture phase
-      }
-    }
-    
-    // Also hook into Hulk Product Options success callback if present
-    if (window.HulkApps && window.HulkApps.ProductOptions) {
-      var originalAddToCart = window.HulkApps.ProductOptions.addToCart;
-      if (originalAddToCart) {
-        window.HulkApps.ProductOptions.addToCart = function() {
-          var result = originalAddToCart.apply(this, arguments);
-          addAddonsToCart();
-          return result;
-        };
-      }
-    }
-  }
-
-  function handleFormSubmit(e) {
-    try {
-      var form = e.target;
-      
-      var addonsContainer = document.querySelector('[id^="product-addons-"], .addon-options, .product-addons');
-      if (!addonsContainer) {
-        return;
-      }
-      
-      var checkedAddons = addonsContainer.querySelectorAll('.product-addons__checkbox:checked:not([disabled])');
-      if (checkedAddons.length === 0) {
-        return;
-      }
-      
-      // Check if Hulk or other apps are present - if so, don't prevent default
-      var hasThirdPartyApp = window.HulkApps || window.BOLD || document.querySelector('[data-hulk-app]');
-      
-      if (!hasThirdPartyApp) {
-        e.preventDefault();
-        e.stopPropagation();
-      } else {
-        // Let the third-party app handle the main product
-        // We'll add add-ons after a short delay
-        setTimeout(function() {
-          addAddonsToCart();
-        }, 500);
-        return;
-      }
-      
-      var variantInput = form.querySelector('select[name="id"], input[name="id"][type="hidden"], input[name="id"]:not([type])');
-      if (!variantInput) {
-        console.error('Could not find variant input');
-        return;
-      }
-      
-      var qtyInput = form.querySelector('input[name="quantity"]');
-      var mainVariantId = parseInt(variantInput.value, 10);
-      var mainQty = qtyInput ? parseInt(qtyInput.value, 10) || 1 : 1;
-      
-      if (!mainVariantId) {
-        console.error('Invalid variant ID');
-        return;
-      }
-      
-      var submitBtns = form.querySelectorAll('[type="submit"]');
-      for (var i = 0; i < submitBtns.length; i++) {
-        var btn = submitBtns[i];
-        btn.setAttribute('disabled', 'disabled');
-        var originalText = btn.textContent;
-        btn.setAttribute('data-original-text', originalText);
-        btn.textContent = 'Adding...';
-      }
-      
-      var items = [{ id: mainVariantId, quantity: mainQty }];
-      
-      for (var j = 0; j < checkedAddons.length; j++) {
-        var checkbox = checkedAddons[j];
-        var addonVariantId = parseInt(checkbox.dataset.variantId || checkbox.dataset.addonVariantId, 10);
-        if (addonVariantId) {
-          items.push({ id: addonVariantId, quantity: 1 });
-        }
-      }
-      
-      fetch('/cart/add.js', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: items })
-      })
-      .then(function(response) {
-        if (!response.ok) {
-          throw new Error('Failed to add items to cart');
-        }
-        return response.json();
-      })
-      .then(function() {
-        window.location.href = '/cart';
-      })
-      .catch(function(err) {
-        console.warn('Bulk add failed, trying fallback method:', err);
-        addItemsSequentially(items, submitBtns);
-      });
-      
-    } catch (err) {
-      console.error('Product addons error:', err);
-    }
-  }
-  
-  function addAddonsToCart() {
     var addonsContainer = document.querySelector('[id^="product-addons-"], .addon-options, .product-addons');
     if (!addonsContainer) {
       return;
@@ -187,6 +114,30 @@
     var checkedAddons = addonsContainer.querySelectorAll('.product-addons__checkbox:checked:not([disabled])');
     if (checkedAddons.length === 0) {
       return;
+    }
+    
+    addonsProcessing = true;
+    
+    // Wait a moment for main product to finish adding
+    setTimeout(function() {
+      addAddonsToCart().finally(function() {
+        // Reset after a delay
+        setTimeout(function() {
+          addonsProcessing = false;
+        }, 2000);
+      });
+    }, 300);
+  }
+  
+  function addAddonsToCart() {
+    var addonsContainer = document.querySelector('[id^="product-addons-"], .addon-options, .product-addons');
+    if (!addonsContainer) {
+      return Promise.resolve();
+    }
+    
+    var checkedAddons = addonsContainer.querySelectorAll('.product-addons__checkbox:checked:not([disabled])');
+    if (checkedAddons.length === 0) {
+      return Promise.resolve();
     }
     
     var items = [];
@@ -199,10 +150,10 @@
     }
     
     if (items.length === 0) {
-      return;
+      return Promise.resolve();
     }
     
-    fetch('/cart/add.js', {
+    return fetch('/cart/add.js', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ items: items })
@@ -211,57 +162,16 @@
       return response.json();
     })
     .then(function() {
-      // Trigger cart update event for theme
-      var event;
-      if (typeof Event === 'function') {
-        event = new Event('cart:updated');
-      } else {
-        event = document.createEvent('Event');
-        event.initEvent('cart:updated', true, true);
-      }
-      document.dispatchEvent(event);
+      console.log('Add-ons successfully added to cart');
+      return Promise.resolve();
     })
     .catch(function(err) {
       console.error('Failed to add add-ons to cart:', err);
+      return Promise.reject(err);
     });
   }
 
-  function addItemsSequentially(items, submitBtns) {
-    var sequence = Promise.resolve();
-    for (var i = 0; i < items.length; i++) {
-      (function(item) {
-        sequence = sequence.then(function() {
-          return fetch('/cart/add.js', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: item.id, quantity: item.quantity })
-          })
-          .then(function(response) {
-            if (!response.ok) {
-              throw new Error('Failed to add item ' + item.id);
-            }
-            return response.json();
-          });
-        });
-      })(items[i]);
-    }
-    
-    sequence
-      .then(function() {
-        window.location.href = '/cart';
-      })
-      .catch(function(err) {
-        console.error('Sequential add also failed:', err);
-        alert('Sorry, there was an error adding items to your cart. Please try again.');
-        
-        for (var i = 0; i < submitBtns.length; i++) {
-          var btn = submitBtns[i];
-          btn.removeAttribute('disabled');
-          var originalText = btn.getAttribute('data-original-text') || 'Add to Cart';
-          btn.textContent = originalText;
-        }
-      });
-  }
+
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
