@@ -6,6 +6,9 @@
 {{ 'component-tab.css' | asset_url | stylesheet_tag }}
 {{ 'component-product-form.css' | asset_url | stylesheet_tag }}
 {{ 'component-grid.css' | asset_url | stylesheet_tag }}
+{{ 'product-addons.css' | asset_url | stylesheet_tag }}
+
+<script src="{{ 'product-addons.js' | asset_url }}" defer="defer"></script>
 
 {% assign product_page_layout = settings.product_page_layout %}
 
@@ -3317,6 +3320,316 @@
                     "step": 1,
                     "unit": "t:sections.layout.mg_desktop.unit",
                     "default": 0
+                }
+            ]
+        },
+        {
+            "type": "addon_options",
+            "name": "Product Add-ons",
+            "limit": 1,
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "addons_title",
+                    "label": "Section Title",
+                    "default": "Add-ons"
+                },
+                {
+                    "type": "text",
+                    "id": "product_1",
+                    "label": "Product Handle 1",
+                    "info": "Enter the product handle (e.g., 'my-product-handle')"
+                },
+                {
+                    "type": "text",
+                    "id": "variant_id_1",
+                    "label": "Variant ID 1 (optional)",
+                    "info": "Leave blank to use first available variant"
+                },
+                {
+                    "type": "text",
+                    "id": "label_override_1",
+                    "label": "Custom Label 1 (optional)",
+                    "info": "Override the product title"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_price_1",
+                    "label": "Show Price 1",
+                    "default": true
+                },
+                {
+                    "type": "checkbox",
+                    "id": "hide_if_soldout_1",
+                    "label": "Hide if Sold Out 1",
+                    "default": false
+                },
+                {
+                    "type": "text",
+                    "id": "product_2",
+                    "label": "Product Handle 2"
+                },
+                {
+                    "type": "text",
+                    "id": "variant_id_2",
+                    "label": "Variant ID 2 (optional)"
+                },
+                {
+                    "type": "text",
+                    "id": "label_override_2",
+                    "label": "Custom Label 2 (optional)"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_price_2",
+                    "label": "Show Price 2",
+                    "default": true
+                },
+                {
+                    "type": "checkbox",
+                    "id": "hide_if_soldout_2",
+                    "label": "Hide if Sold Out 2",
+                    "default": false
+                },
+                {
+                    "type": "text",
+                    "id": "product_3",
+                    "label": "Product Handle 3"
+                },
+                {
+                    "type": "text",
+                    "id": "variant_id_3",
+                    "label": "Variant ID 3 (optional)"
+                },
+                {
+                    "type": "text",
+                    "id": "label_override_3",
+                    "label": "Custom Label 3 (optional)"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_price_3",
+                    "label": "Show Price 3",
+                    "default": true
+                },
+                {
+                    "type": "checkbox",
+                    "id": "hide_if_soldout_3",
+                    "label": "Hide if Sold Out 3",
+                    "default": false
+                },
+                {
+                    "type": "text",
+                    "id": "product_4",
+                    "label": "Product Handle 4"
+                },
+                {
+                    "type": "text",
+                    "id": "variant_id_4",
+                    "label": "Variant ID 4 (optional)"
+                },
+                {
+                    "type": "text",
+                    "id": "label_override_4",
+                    "label": "Custom Label 4 (optional)"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_price_4",
+                    "label": "Show Price 4",
+                    "default": true
+                },
+                {
+                    "type": "checkbox",
+                    "id": "hide_if_soldout_4",
+                    "label": "Hide if Sold Out 4",
+                    "default": false
+                },
+                {
+                    "type": "text",
+                    "id": "product_5",
+                    "label": "Product Handle 5"
+                },
+                {
+                    "type": "text",
+                    "id": "variant_id_5",
+                    "label": "Variant ID 5 (optional)"
+                },
+                {
+                    "type": "text",
+                    "id": "label_override_5",
+                    "label": "Custom Label 5 (optional)"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_price_5",
+                    "label": "Show Price 5",
+                    "default": true
+                },
+                {
+                    "type": "checkbox",
+                    "id": "hide_if_soldout_5",
+                    "label": "Hide if Sold Out 5",
+                    "default": false
+                },
+                {
+                    "type": "text",
+                    "id": "product_6",
+                    "label": "Product Handle 6"
+                },
+                {
+                    "type": "text",
+                    "id": "variant_id_6",
+                    "label": "Variant ID 6 (optional)"
+                },
+                {
+                    "type": "text",
+                    "id": "label_override_6",
+                    "label": "Custom Label 6 (optional)"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_price_6",
+                    "label": "Show Price 6",
+                    "default": true
+                },
+                {
+                    "type": "checkbox",
+                    "id": "hide_if_soldout_6",
+                    "label": "Hide if Sold Out 6",
+                    "default": false
+                },
+                {
+                    "type": "text",
+                    "id": "product_7",
+                    "label": "Product Handle 7"
+                },
+                {
+                    "type": "text",
+                    "id": "variant_id_7",
+                    "label": "Variant ID 7 (optional)"
+                },
+                {
+                    "type": "text",
+                    "id": "label_override_7",
+                    "label": "Custom Label 7 (optional)"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_price_7",
+                    "label": "Show Price 7",
+                    "default": true
+                },
+                {
+                    "type": "checkbox",
+                    "id": "hide_if_soldout_7",
+                    "label": "Hide if Sold Out 7",
+                    "default": false
+                },
+                {
+                    "type": "text",
+                    "id": "product_8",
+                    "label": "Product Handle 8"
+                },
+                {
+                    "type": "text",
+                    "id": "variant_id_8",
+                    "label": "Variant ID 8 (optional)"
+                },
+                {
+                    "type": "text",
+                    "id": "label_override_8",
+                    "label": "Custom Label 8 (optional)"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_price_8",
+                    "label": "Show Price 8",
+                    "default": true
+                },
+                {
+                    "type": "checkbox",
+                    "id": "hide_if_soldout_8",
+                    "label": "Hide if Sold Out 8",
+                    "default": false
+                },
+                {
+                    "type": "text",
+                    "id": "product_9",
+                    "label": "Product Handle 9"
+                },
+                {
+                    "type": "text",
+                    "id": "variant_id_9",
+                    "label": "Variant ID 9 (optional)"
+                },
+                {
+                    "type": "text",
+                    "id": "label_override_9",
+                    "label": "Custom Label 9 (optional)"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_price_9",
+                    "label": "Show Price 9",
+                    "default": true
+                },
+                {
+                    "type": "checkbox",
+                    "id": "hide_if_soldout_9",
+                    "label": "Hide if Sold Out 9",
+                    "default": false
+                },
+                {
+                    "type": "text",
+                    "id": "product_10",
+                    "label": "Product Handle 10"
+                },
+                {
+                    "type": "text",
+                    "id": "variant_id_10",
+                    "label": "Variant ID 10 (optional)"
+                },
+                {
+                    "type": "text",
+                    "id": "label_override_10",
+                    "label": "Custom Label 10 (optional)"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_price_10",
+                    "label": "Show Price 10",
+                    "default": true
+                },
+                {
+                    "type": "checkbox",
+                    "id": "hide_if_soldout_10",
+                    "label": "Hide if Sold Out 10",
+                    "default": false
+                },
+                {
+                    "type": "header",
+                    "content": "Spacing"
+                },
+                {
+                    "type": "range",
+                    "id": "spacing_top",
+                    "label": "Top Spacing",
+                    "min": 0,
+                    "max": 100,
+                    "step": 1,
+                    "unit": "px",
+                    "default": 20
+                },
+                {
+                    "type": "range",
+                    "id": "spacing_bottom",
+                    "label": "Bottom Spacing",
+                    "min": 0,
+                    "max": 100,
+                    "step": 1,
+                    "unit": "px",
+                    "default": 20
                 }
             ]
         },
