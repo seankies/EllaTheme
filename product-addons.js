@@ -64,7 +64,7 @@
   }
 
   function initProductAddons() {
-    var productForms = document.querySelectorAll('form[action^="/cart/add"], form[action*="/cart/add"]');
+    var productForms = document.querySelectorAll('form[action*="/cart/add"], form.product-form, form[data-product-id]');
     
     if (!productForms || productForms.length === 0) {
       return;
@@ -82,17 +82,19 @@
   function handleFormSubmit(e) {
     try {
       var form = e.target;
+      
       var addonsContainer = document.querySelector('[id^="product-addons-"], .addon-options, .product-addons');
       if (!addonsContainer) {
         return;
       }
       
-      var checkedAddons = addonsContainer.querySelectorAll('.product-addons__checkbox:checked');
+      var checkedAddons = addonsContainer.querySelectorAll('.product-addons__checkbox:checked:not([disabled])');
       if (checkedAddons.length === 0) {
         return;
       }
       
       e.preventDefault();
+      e.stopPropagation();
       
       var variantInput = form.querySelector('select[name="id"], input[name="id"][type="hidden"], input[name="id"]:not([type])');
       if (!variantInput) {
