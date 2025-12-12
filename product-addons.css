@@ -41,7 +41,7 @@
   border: 2px solid transparent;
   transition: all 0.2s ease;
   position: relative;
-  background-color: #fff;
+  background-color: var(--addon-item-bg, #fff);
 }
 
 .addon-options .product-addons__item:hover:not(.unavailable),

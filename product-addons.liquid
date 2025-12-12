@@ -54,10 +54,22 @@ Supports both data-variant-id and data-addon-variant-id for backward compatibili
           
           {% if show_images and addon.featured_image %}
             <div class="product-addons__image image-size-{{ image_size }}">
-              <img src="{{ addon.featured_image | image_url: width: 100 }}" 
+              {% liquid
+                if image_size == 'small'
+                  assign img_width = 80
+                  assign display_size = 40
+                elsif image_size == 'medium'
+                  assign img_width = 120
+                  assign display_size = 60
+                else
+                  assign img_width = 160
+                  assign display_size = 80
+                endif
+              %}
+              <img src="{{ addon.featured_image | image_url: width: img_width }}" 
                    alt="{{ addon.title | escape }}"
-                   width="{% if image_size == 'small' %}40{% elsif image_size == 'medium' %}60{% else %}80{% endif %}"
-                   height="{% if image_size == 'small' %}40{% elsif image_size == 'medium' %}60{% else %}80{% endif %}"
+                   width="{{ display_size }}"
+                   height="{{ display_size }}"
                    loading="lazy">
             </div>
           {% endif %}
