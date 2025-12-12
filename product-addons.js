@@ -2,6 +2,16 @@
  * Product Add-ons functionality
  * Supports both data-variant-id and data-addon-variant-id
  * Implements delegated selection, visual feedback, and robust add-to-cart
+ * 
+ * INTEGRATION WITH MAIN PRODUCT:
+ * - Automatically intercepts the main product's "Add to Cart" form submission
+ * - When customer clicks main product "Add to Cart" button:
+ *   1. Main product is added to cart
+ *   2. All checked add-on products are also added to cart
+ *   3. Customer is redirected to cart page with all items
+ * - Uses bulk add-to-cart API (/cart/add.js) for optimal performance
+ * - Falls back to sequential adding if bulk fails
+ * - Mobile-friendly with larger tap targets and responsive design
  */
 (function() {
   'use strict';

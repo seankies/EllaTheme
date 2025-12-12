@@ -243,6 +243,7 @@
   align-self: flex-start;
 }
 
+/* Mobile-first responsive design - Priority for mobile experience */
 @media (max-width: 767px) {
   .addon-options,
   .product-addons {
@@ -250,23 +251,142 @@
     padding: 0.5rem 0;
   }
   
+  .addon-options .product-addons__title,
+  .product-addons .product-addons__title {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .addon-options .product-addons__description,
+  .product-addons .product-addons__description {
+    font-size: 0.85rem;
+    margin-bottom: 0.75rem;
+  }
+  
   .addon-options .product-addons__item,
   .product-addons .product-addons__item {
     font-size: 0.9rem;
-    padding: 0.6rem;
-    gap: 0.5rem;
+    padding: 0.75rem 0.5rem;
+    gap: 0.6rem;
+    border-radius: 8px;
+  }
+  
+  /* Larger tap targets for mobile */
+  .addon-options .product-addons__checkbox,
+  .product-addons .product-addons__checkbox {
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px;
+    min-height: 20px;
+  }
+  
+  .addon-options .product-addons__checkbox-wrapper,
+  .product-addons .product-addons__checkbox-wrapper {
+    padding: 0.25rem;
+    margin: -0.25rem;
+  }
+  
+  /* Optimize image sizes for mobile */
+  .addon-options .product-addons__image.image-size-small,
+  .product-addons .product-addons__image.image-size-small {
+    width: 45px;
+    height: 45px;
   }
   
   .addon-options .product-addons__image.image-size-medium,
   .product-addons .product-addons__image.image-size-medium,
   .addon-options .product-addons__image.image-size-large,
   .product-addons .product-addons__image.image-size-large {
-    width: 50px;
-    height: 50px;
+    width: 55px;
+    height: 55px;
   }
   
+  /* Adjust content for mobile readability */
+  .addon-options .product-addons__content,
+  .product-addons .product-addons__content {
+    gap: 0.3rem;
+  }
+  
+  .addon-options .product-addons__label,
+  .product-addons .product-addons__label {
+    font-size: 0.9rem;
+    line-height: 1.35;
+  }
+  
+  .addon-options .product-addons__excerpt,
+  .product-addons .product-addons__excerpt {
+    font-size: 0.8rem;
+    line-height: 1.35;
+  }
+  
+  .addon-options .product-addons__price,
+  .product-addons .product-addons__price {
+    font-size: 0.9rem;
+  }
+  
+  .addon-options .product-addons__compare-price,
+  .product-addons .product-addons__compare-price {
+    font-size: 0.8rem;
+  }
+  
+  /* Adjust checkmark position for mobile */
+  .addon-options .product-addons__checkmark,
+  .product-addons .product-addons__checkmark {
+    right: 0.5rem;
+    font-size: 1.2rem;
+  }
+  
+  /* Card layout on mobile - single column */
   .addon-options.layout-card .product-addons__list,
   .product-addons.layout-card .product-addons__list {
     grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .addon-options.layout-card .product-addons__item,
+  .product-addons.layout-card .product-addons__item {
+    padding: 0.75rem;
+  }
+}
+
+/* Extra small mobile devices */
+@media (max-width: 374px) {
+  .addon-options .product-addons__item,
+  .product-addons .product-addons__item {
+    padding: 0.6rem 0.4rem;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+  }
+  
+  .addon-options .product-addons__image.image-size-small,
+  .product-addons .product-addons__image.image-size-small {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .addon-options .product-addons__image.image-size-medium,
+  .product-addons .product-addons__image.image-size-medium,
+  .addon-options .product-addons__image.image-size-large,
+  .product-addons .product-addons__image.image-size-large {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .addon-options .product-addons__label,
+  .product-addons .product-addons__label {
+    font-size: 0.85rem;
+  }
+  
+  .addon-options .product-addons__price,
+  .product-addons .product-addons__price {
+    font-size: 0.85rem;
+  }
+}
+
+/* Tablet devices */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .addon-options.layout-card .product-addons__list,
+  .product-addons.layout-card .product-addons__list {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
