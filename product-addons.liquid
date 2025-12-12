@@ -1,37 +1,43 @@
 {% comment %}
-Product Add-ons Block - Complete implementation
+Product Add-ons Block - Complete implementation  
 Supports both data-variant-id and data-addon-variant-id for backward compatibility
 Supports product_list (product picker) and addon_products (handles) for flexibility
 {% endcomment %}
 
 {% liquid
-  # Support both product_list (new) and addon_products (legacy)
-  # Always try product_list first (theme editor method)
-  assign addon_products = block.settings.product_list
-  assign addon_products_handles = block.settings.addon_products | split: ','
+  # Get both product selection methods
+  assign addon_products_from_picker = block.settings.product_list
+  assign addon_products_handles_string = block.settings.addon_products | strip
   
-  # Determine which method to use
-  # If product_list exists (even if empty), use it; otherwise use handles
+  # Determine which method has products
+  # product_list is an array - check its size
+  # addon_products is a string - check if it's blank after stripping whitespace
   assign use_product_list = false
-  if addon_products != blank
+  if addon_products_from_picker.size > 0
     assign use_product_list = true
+    assign addon_products = addon_products_from_picker
+  elsif addon_products_handles_string != blank
+    assign use_product_list = false
+    assign addon_products_handles = addon_products_handles_string | split: ','
   endif
   
+  # Get display settings
   assign show_images = block.settings.show_images
   assign show_descriptions = block.settings.show_descriptions
   assign image_size = block.settings.image_size | default: 'small'
   assign layout_style = block.settings.layout_style | default: 'compact'
   
-  # Determine if we should render the block
+  # Determine if we should render
   assign should_render = false
-  if use_product_list and addon_products.size > 0
-    assign should_render = true
-  endif
-  unless use_product_list
+  if use_product_list
+    if addon_products.size > 0
+      assign should_render = true
+    endif
+  else
     if addon_products_handles.size > 0
       assign should_render = true
     endif
-  endunless
+  endif
 %}
 
 {% if should_render %}
