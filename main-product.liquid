@@ -6,6 +6,7 @@
 {{ 'component-tab.css' | asset_url | stylesheet_tag }}
 {{ 'component-product-form.css' | asset_url | stylesheet_tag }}
 {{ 'component-grid.css' | asset_url | stylesheet_tag }}
+{{ 'product-addons.css' | asset_url | stylesheet_tag }}
 
 {% assign product_page_layout = settings.product_page_layout %}
 
@@ -3321,6 +3322,158 @@
             ]
         },
         {
+            "type": "product_addons",
+            "name": "Product Add-ons",
+            "limit": 1,
+            "settings": [
+                {
+                    "type": "paragraph",
+                    "content": "Select products that customers can add to their cart along with the main product."
+                },
+                {
+                    "type": "text",
+                    "id": "addons_title",
+                    "label": "Block Title",
+                    "default": "Add-ons",
+                    "info": "Leave blank to hide the title"
+                },
+                {
+                    "type": "textarea",
+                    "id": "addons_description",
+                    "label": "Block Description",
+                    "placeholder": "Select additional items to enhance your purchase",
+                    "info": "Optional description shown below the title"
+                },
+                {
+                    "type": "product_list",
+                    "id": "product_list",
+                    "label": "Add-on Products",
+                    "info": "Search and select products to show as add-ons",
+                    "limit": 10
+                },
+                {
+                    "type": "header",
+                    "content": "Display Options"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_images",
+                    "label": "Show product images",
+                    "default": true
+                },
+                {
+                    "type": "select",
+                    "id": "image_size",
+                    "label": "Image size",
+                    "options": [
+                        {
+                            "value": "small",
+                            "label": "Small (40x40px)"
+                        },
+                        {
+                            "value": "medium",
+                            "label": "Medium (60x60px)"
+                        },
+                        {
+                            "value": "large",
+                            "label": "Large (80x80px)"
+                        }
+                    ],
+                    "default": "small"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_descriptions",
+                    "label": "Show product descriptions",
+                    "default": false,
+                    "info": "Show short excerpt of add-on product description"
+                },
+                {
+                    "type": "select",
+                    "id": "layout_style",
+                    "label": "Layout style",
+                    "options": [
+                        {
+                            "value": "compact",
+                            "label": "Compact List"
+                        },
+                        {
+                            "value": "list",
+                            "label": "Spacious List"
+                        },
+                        {
+                            "value": "card",
+                            "label": "Card Grid"
+                        }
+                    ],
+                    "default": "compact"
+                },
+                {
+                    "type": "header",
+                    "content": "Colors"
+                },
+                {
+                    "type": "color",
+                    "id": "title_color",
+                    "label": "Title color",
+                    "default": "#232323"
+                },
+                {
+                    "type": "color",
+                    "id": "border_color",
+                    "label": "Border color",
+                    "default": "#eee"
+                },
+                {
+                    "type": "color",
+                    "id": "selected_background",
+                    "label": "Selected item background",
+                    "default": "#f0f8ff"
+                },
+                {
+                    "type": "color",
+                    "id": "selected_border_color",
+                    "label": "Selected item border",
+                    "default": "#232323"
+                },
+                {
+                    "type": "header",
+                    "content": "Spacing"
+                },
+                {
+                    "type": "range",
+                    "id": "spacing_top",
+                    "label": "Top spacing",
+                    "min": 0,
+                    "max": 100,
+                    "step": 1,
+                    "unit": "px",
+                    "default": 20
+                },
+                {
+                    "type": "range",
+                    "id": "spacing_bottom",
+                    "label": "Bottom spacing",
+                    "min": 0,
+                    "max": 100,
+                    "step": 1,
+                    "unit": "px",
+                    "default": 20
+                },
+                {
+                    "type": "header",
+                    "content": "Debug"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_debug",
+                    "label": "Show debug messages",
+                    "default": false,
+                    "info": "Display warnings for products not found (for development only)"
+                }
+            ]
+        },
+        {
             "type": "delivery_time",
             "name": "t:sections.main-product.settings.header__24.content",
             "settings": [
@@ -3532,3 +3685,5 @@
     ]
 }
 {% endschema %}
+
+<script src="{{ 'product-addons.js' | asset_url }}" defer></script>

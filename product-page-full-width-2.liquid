@@ -1178,6 +1178,18 @@
                                         {%- endif -%}
                                     {%- when 'custom_liquid' -%}
                                         {{ block.settings.custom_liquid }}
+                                    {%- when 'product_addons' -%}
+                                        <div class="productView-moreItem{% if settings.banner_animation == 'effect_fade_up' %} scroll-trigger animate--slide-in{% endif %}"
+                                            style="--spacing-top: {{ spacing_top | append: 'px' }};
+                                            --spacing-bottom: {{ spacing_bottom | append: 'px' }};
+                                            "
+                                            {{ block.shopify_attributes }}
+                                        >
+                                            {% render 'product-addons',
+                                                block: block,
+                                                section: section
+                                            %}
+                                        </div>
                                     {%- when 'complementary_products' -%}
                                         <div class="productView-moreItem{% if settings.banner_animation == 'effect_fade_up' %} scroll-trigger animate--slide-in{% endif %}" style="--spacing-top: {{ spacing_top | append: 'px' }};--spacing-bottom: {{ spacing_bottom | append: 'px' }};">
                                             <complementary-products class="productView-complementary complementary-products style-{{ complementary_product_layout }} no-js-hidden" id="complementary-product-data" data-complementary-product data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit=10&intent=complementary">
