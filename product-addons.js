@@ -41,6 +41,8 @@
         const checkbox = item.querySelector('.product-addons__checkbox');
         if (checkbox) {
           checkbox.checked = !checkbox.checked;
+          // Dispatch change event for accessibility
+          checkbox.dispatchEvent(new Event('change', { bubbles: true }));
           syncCheckboxState(checkbox);
         }
       }
@@ -53,9 +55,11 @@
     if (!productForms || productForms.length === 0) return;
     
     productForms.forEach(function(form) {
-      // Remove existing listener if any
-      form.removeEventListener('submit', handleFormSubmit);
-      form.addEventListener('submit', handleFormSubmit);
+      // Avoid duplicate listeners by checking if handler already exists
+      if (!form.dataset.addonsInitialized) {
+        form.dataset.addonsInitialized = 'true';
+        form.addEventListener('submit', handleFormSubmit);
+      }
     });
   }
 
@@ -135,8 +139,6 @@
 
   // Fallback method: add items one by one using form submission
   function addItemsSequentially(items, submitBtns) {
-    let formData = new FormData();
-    
     // Try sequential AJAX adds first
     let sequence = Promise.resolve();
     items.forEach(function(item) {
