@@ -1,0 +1,42 @@
+{% layout none %}
+{
+  "items": [
+    {%- for item in cart.items -%}
+      {
+        "id": {{ item.id }},
+        "properties": {
+<span  data-hulkapps-line-properties  data-hulkapps-line-properties  data-hulkapps-line-properties data-hulkapps-line-properties>
+          {% for property in item.properties %}
+            {{ property.first | json }}: {{ property.last | json }}
+            {% unless forloop.last %},{% endunless %}
+          {% endfor %}
+</span>
+<button type='button' style='display: none;' class='edit_cart_option btn btn--primary button' data-product_id='{{item.product_id}}' data-key='{{item.key}}' data-variant_id='{{item.variant_id}}' data-quantity='{{item.quantity}}'>Edit Options</button>
+
+
+
+        },
+        "quantity": {{ item.quantity }},
+        "variant_id": {{ item.variant_id }},
+        "title": {{ item.title | json }},
+        "price": <span  data-hulkapps-lineitem data-hulkapps-ci-price data-key='{{item.key}}'>{{ item.price }}</span>,
+        "original_price": <span  data-hulkapps-lineitem data-hulkapps-ci-price data-key='{{item.key}}'>{{ item.original_price }}</span>,
+        "discounted_price": <span  data-hulkapps-lineitem data-hulkapps-ci-price data-key='{{item.key}}'>{{ item.discounted_price }}</span>,
+        "line_price": <span  data-hulkapps-lineitem data-hulkapps-line-price data-key='{{item.key}}'>{{ item.line_price }}</span>,
+        "original_line_price": <span  data-hulkapps-lineitem data-hulkapps-line-price data-key='{{item.key}}'>{{ item.original_line_price }}</span>,
+        "sku": {{ item.sku | json }},
+        "vendor": {{ item.product.vendor | json }},
+        "taxable": {{ item.taxable }},
+        "product_id": {{ item.product_id }},
+        "final_price": <span  data-hulkapps-lineitem data-hulkapps-ci-price data-key='{{item.key}}'>{{ item.final_price }}</span>,
+        "final_line_price": <span  data-hulkapps-lineitem data-hulkapps-line-price data-key='{{item.key}}'>{{ item.final_line_price }}</span>,
+        "requires_shipping": {{ item.requires_shipping }},
+        "product_type": {{ item.product.type | json }},
+        "product_title": {{ item.product.title | json }},
+        "collection": {{ item.product.collections | map: 'id' | json }},
+        "tags": {{ item.product.tags | json }},
+        "published": {% if item.product.published_at %}true{% else %}false{% endif %}
+      }{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  ]
+}
