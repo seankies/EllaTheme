@@ -3328,7 +3328,7 @@
             "settings": [
                 {
                     "type": "paragraph",
-                    "content": "Allow customers to add optional products when purchasing this item. Enter product handles separated by commas."
+                    "content": "Select products that customers can add to their cart along with the main product."
                 },
                 {
                     "type": "text",
@@ -3345,11 +3345,11 @@
                     "info": "Optional description shown below the title"
                 },
                 {
-                    "type": "textarea",
-                    "id": "addon_products",
-                    "label": "Product Handles",
-                    "info": "Enter product handles separated by commas (e.g., extended-warranty, gift-wrapping)",
-                    "placeholder": "product-handle-1, product-handle-2"
+                    "type": "product_list",
+                    "id": "product_list",
+                    "label": "Add-on Products",
+                    "info": "Search and select products to show as add-ons",
+                    "limit": 10
                 },
                 {
                     "type": "header",

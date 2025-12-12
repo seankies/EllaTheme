@@ -1,17 +1,36 @@
 {% comment %}
 Product Add-ons Block - Complete implementation
 Supports both data-variant-id and data-addon-variant-id for backward compatibility
+Supports product_list (product picker) and addon_products (handles) for flexibility
 {% endcomment %}
 
 {% liquid
-  assign addon_products = block.settings.addon_products | split: ','
+  # Support both product_list (new) and addon_products (legacy)
+  if block.settings.product_list != blank
+    assign addon_products = block.settings.product_list
+  else
+    assign addon_products_handles = block.settings.addon_products | split: ','
+    assign addon_products = ''
+    for handle in addon_products_handles
+      assign handle = handle | strip
+      assign product = all_products[handle]
+      if product.id != blank
+        if addon_products == ''
+          assign addon_products = product
+        else
+          assign addon_products = addon_products | append: ',' | append: product
+        endif
+      endif
+    endfor
+  endif
+  
   assign show_images = block.settings.show_images
   assign show_descriptions = block.settings.show_descriptions
   assign image_size = block.settings.image_size | default: 'small'
   assign layout_style = block.settings.layout_style | default: 'compact'
 %}
 
-{% if addon_products.size > 0 %}
+{% if addon_products != blank and addon_products.size > 0 %}
 <div id="product-addons-{{ section.id }}" class="product-addons addon-options layout-{{ layout_style }}"
      style="--addon-title-color: {{ block.settings.title_color | default: '#232323' }};
             --addon-border-color: {{ block.settings.border_color | default: '#eee' }};
@@ -27,10 +46,7 @@ Supports both data-variant-id and data-addon-variant-id for backward compatibili
   {% endif %}
   
   <div class="product-addons__list">
-    {% for addon_handle in addon_products %}
-      {% assign addon_handle = addon_handle | strip %}
-      {% assign addon = all_products[addon_handle] %}
-      
+    {% for addon in addon_products %}
       {% if addon.id != blank %}
         {% assign addon_variant = addon.selected_or_first_available_variant %}
         {% assign is_available = addon.available %}
@@ -96,17 +112,12 @@ Supports both data-variant-id and data-addon-variant-id for backward compatibili
           </div>
           
         </label>
-        
-      {% else %}
-        {% comment %}Debug: Product not found{% endcomment %}
-        {% if block.settings.show_debug %}
-          <div class="product-addons__debug">
-            ⚠️ Product with handle "{{ addon_handle }}" not found
-          </div>
-        {% endif %}
       {% endif %}
-      
     {% endfor %}
   </div>
 </div>
+{% elsif block.settings.show_debug %}
+  <div class="product-addons__debug">
+    ⚠️ No add-on products configured. Please select products in the theme editor.
+  </div>
 {% endif %}

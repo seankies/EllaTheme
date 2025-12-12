@@ -34,12 +34,17 @@
       }
     });
 
-    // Also handle click events on the label for better UX
+    // Also handle click events on the label for better UX (but not on checkbox itself)
     document.addEventListener('click', function(e) {
+      // Only handle clicks that are NOT on the checkbox or its wrapper
+      if (e.target.matches('input[type="checkbox"]') || e.target.closest('.product-addons__checkbox-wrapper')) {
+        return; // Let the checkbox handle its own clicks
+      }
+      
       const item = e.target.closest('[data-addon-item]');
-      if (item && !e.target.matches('input[type="checkbox"]')) {
+      if (item) {
         const checkbox = item.querySelector('.product-addons__checkbox');
-        if (checkbox) {
+        if (checkbox && !checkbox.disabled) {
           checkbox.checked = !checkbox.checked;
           // Dispatch change event for accessibility
           checkbox.dispatchEvent(new Event('change', { bubbles: true }));
