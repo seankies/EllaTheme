@@ -1096,6 +1096,14 @@
                                                 %}
                                             </div>
                                         {% endunless %}
+                                    {%- when 'addon_options' -%}
+                                        <div class="productView-moreItem{% if settings.banner_animation == 'effect_fade_up' %} scroll-trigger animate--slide-in{% endif %}">
+                                            {% render 'addon-options',
+                                                block: block,
+                                                section: section,
+                                                product: product
+                                            %}
+                                        </div>
                                     {%- when 'customer_viewing' -%}
                                         <div class="productView-moreItem{% if settings.banner_animation == 'effect_fade_up' %} scroll-trigger animate--slide-in{% endif %}"
                                             style="--spacing-top: {{ spacing_top | append: 'px' }};
