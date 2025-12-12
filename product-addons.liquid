@@ -18,9 +18,17 @@ Supports product_list (product picker) and addon_products (handles) for flexibil
   assign show_descriptions = block.settings.show_descriptions
   assign image_size = block.settings.image_size | default: 'small'
   assign layout_style = block.settings.layout_style | default: 'compact'
+  
+  # Determine if we should render the block
+  assign should_render = false
+  if use_product_list and addon_products.size > 0
+    assign should_render = true
+  elsif use_product_list == false and addon_products_handles.size > 0
+    assign should_render = true
+  endif
 %}
 
-{% if (use_product_list and addon_products.size > 0) or (use_product_list == false and addon_products_handles.size > 0) %}
+{% if should_render %}
 <div id="product-addons-{{ section.id }}" class="product-addons addon-options layout-{{ layout_style }}"
      style="--addon-title-color: {{ block.settings.title_color | default: '#232323' }};
             --addon-border-color: {{ block.settings.border_color | default: '#eee' }};
