@@ -6,22 +6,12 @@ Supports product_list (product picker) and addon_products (handles) for flexibil
 
 {% liquid
   # Support both product_list (new) and addon_products (legacy)
+  assign use_product_list = false
   if block.settings.product_list != blank
     assign addon_products = block.settings.product_list
+    assign use_product_list = true
   else
     assign addon_products_handles = block.settings.addon_products | split: ','
-    assign addon_products = ''
-    for handle in addon_products_handles
-      assign handle = handle | strip
-      assign product = all_products[handle]
-      if product.id != blank
-        if addon_products == ''
-          assign addon_products = product
-        else
-          assign addon_products = addon_products | append: ',' | append: product
-        endif
-      endif
-    endfor
   endif
   
   assign show_images = block.settings.show_images
@@ -30,7 +20,7 @@ Supports product_list (product picker) and addon_products (handles) for flexibil
   assign layout_style = block.settings.layout_style | default: 'compact'
 %}
 
-{% if addon_products != blank and addon_products.size > 0 %}
+{% if use_product_list and addon_products.size > 0 or addon_products_handles.size > 0 %}
 <div id="product-addons-{{ section.id }}" class="product-addons addon-options layout-{{ layout_style }}"
      style="--addon-title-color: {{ block.settings.title_color | default: '#232323' }};
             --addon-border-color: {{ block.settings.border_color | default: '#eee' }};
@@ -46,74 +36,154 @@ Supports product_list (product picker) and addon_products (handles) for flexibil
   {% endif %}
   
   <div class="product-addons__list">
-    {% for addon in addon_products %}
-      {% if addon.id != blank %}
-        {% assign addon_variant = addon.selected_or_first_available_variant %}
-        {% assign is_available = addon.available %}
-        
-        <label class="product-addons__item {% unless is_available %}unavailable{% endunless %}" 
-               data-addon-item
-               data-product-id="{{ addon.id }}">
+    {% if use_product_list %}
+      {% comment %} New product_list method {% endcomment %}
+      {% for addon in addon_products %}
+        {% if addon.id != blank %}
+          {% assign addon_variant = addon.selected_or_first_available_variant %}
+          {% assign is_available = addon.available %}
           
-          <div class="product-addons__checkbox-wrapper">
-            <input
-              type="checkbox"
-              class="product-addons__checkbox"
-              data-variant-id="{{ addon_variant.id }}"
-              data-addon-variant-id="{{ addon_variant.id }}"
-              data-addon-price="{{ addon_variant.price }}"
-              data-addon-title="{{ addon.title | escape }}"
-              {% unless is_available %}disabled{% endunless %}
-            />
-            <span class="product-addons__checkmark"></span>
-          </div>
-          
-          {% if show_images and addon.featured_image %}
-            <div class="product-addons__image image-size-{{ image_size }}">
-              {% liquid
-                # Use 2x resolution for retina displays
-                if image_size == 'small'
-                  assign img_width = 80
-                  assign display_size = 40
-                elsif image_size == 'medium'
-                  assign img_width = 120
-                  assign display_size = 60
-                else
-                  assign img_width = 160
-                  assign display_size = 80
-                endif
-              %}
-              <img src="{{ addon.featured_image | image_url: width: img_width }}" 
-                   alt="{{ addon.title | escape }}"
-                   width="{{ display_size }}"
-                   height="{{ display_size }}"
-                   loading="lazy">
-            </div>
-          {% endif %}
-          
-          <div class="product-addons__content">
-            <span class="product-addons__label">
-              {{ addon.title }}
-              {% unless is_available %}
-                <span class="product-addons__sold-out">(Sold Out)</span>
-              {% endunless %}
-            </span>
+          <label class="product-addons__item {% unless is_available %}unavailable{% endunless %}" 
+                 data-addon-item
+                 data-product-id="{{ addon.id }}">
             
-            {% if show_descriptions and addon.description != blank %}
-              <span class="product-addons__excerpt">{{ addon.description | strip_html | truncate: 80 }}</span>
+            <div class="product-addons__checkbox-wrapper">
+              <input
+                type="checkbox"
+                class="product-addons__checkbox"
+                data-variant-id="{{ addon_variant.id }}"
+                data-addon-variant-id="{{ addon_variant.id }}"
+                data-addon-price="{{ addon_variant.price }}"
+                data-addon-title="{{ addon.title | escape }}"
+                {% unless is_available %}disabled{% endunless %}
+              />
+              <span class="product-addons__checkmark"></span>
+            </div>
+            
+            {% if show_images and addon.featured_image %}
+              <div class="product-addons__image image-size-{{ image_size }}">
+                {% liquid
+                  # Use 2x resolution for retina displays
+                  if image_size == 'small'
+                    assign img_width = 80
+                    assign display_size = 40
+                  elsif image_size == 'medium'
+                    assign img_width = 120
+                    assign display_size = 60
+                  else
+                    assign img_width = 160
+                    assign display_size = 80
+                  endif
+                %}
+                <img src="{{ addon.featured_image | image_url: width: img_width }}" 
+                     alt="{{ addon.title | escape }}"
+                     width="{{ display_size }}"
+                     height="{{ display_size }}"
+                     loading="lazy">
+              </div>
             {% endif %}
             
-            <span class="product-addons__price">
-              {% if addon_variant.compare_at_price > addon_variant.price %}
-                <s class="product-addons__compare-price">{{ addon_variant.compare_at_price | money }}</s>
+            <div class="product-addons__content">
+              <span class="product-addons__label">
+                {{ addon.title }}
+                {% unless is_available %}
+                  <span class="product-addons__sold-out">(Sold Out)</span>
+                {% endunless %}
+              </span>
+              
+              {% if show_descriptions and addon.description != blank %}
+                <span class="product-addons__excerpt">{{ addon.description | strip_html | truncate: 80 }}</span>
               {% endif %}
-              + {{ addon_variant.price | money }}
-            </span>
-          </div>
+              
+              <span class="product-addons__price">
+                {% if addon_variant.compare_at_price > addon_variant.price %}
+                  <s class="product-addons__compare-price">{{ addon_variant.compare_at_price | money }}</s>
+                {% endif %}
+                + {{ addon_variant.price | money }}
+              </span>
+            </div>
+            
+          </label>
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      {% comment %} Legacy addon_products method with handles {% endcomment %}
+      {% for addon_handle in addon_products_handles %}
+        {% assign addon_handle = addon_handle | strip %}
+        {% assign addon = all_products[addon_handle] %}
+        
+        {% if addon.id != blank %}
+          {% assign addon_variant = addon.selected_or_first_available_variant %}
+          {% assign is_available = addon.available %}
           
-        </label>
-      {% endif %}
-    {% endfor %}
+          <label class="product-addons__item {% unless is_available %}unavailable{% endunless %}" 
+                 data-addon-item
+                 data-product-id="{{ addon.id }}">
+            
+            <div class="product-addons__checkbox-wrapper">
+              <input
+                type="checkbox"
+                class="product-addons__checkbox"
+                data-variant-id="{{ addon_variant.id }}"
+                data-addon-variant-id="{{ addon_variant.id }}"
+                data-addon-price="{{ addon_variant.price }}"
+                data-addon-title="{{ addon.title | escape }}"
+                {% unless is_available %}disabled{% endunless %}
+              />
+              <span class="product-addons__checkmark"></span>
+            </div>
+            
+            {% if show_images and addon.featured_image %}
+              <div class="product-addons__image image-size-{{ image_size }}">
+                {% liquid
+                  # Use 2x resolution for retina displays
+                  if image_size == 'small'
+                    assign img_width = 80
+                    assign display_size = 40
+                  elsif image_size == 'medium'
+                    assign img_width = 120
+                    assign display_size = 60
+                  else
+                    assign img_width = 160
+                    assign display_size = 80
+                  endif
+                %}
+                <img src="{{ addon.featured_image | image_url: width: img_width }}" 
+                     alt="{{ addon.title | escape }}"
+                     width="{{ display_size }}"
+                     height="{{ display_size }}"
+                     loading="lazy">
+              </div>
+            {% endif %}
+            
+            <div class="product-addons__content">
+              <span class="product-addons__label">
+                {{ addon.title }}
+                {% unless is_available %}
+                  <span class="product-addons__sold-out">(Sold Out)</span>
+                {% endunless %}
+              </span>
+              
+              {% if show_descriptions and addon.description != blank %}
+                <span class="product-addons__excerpt">{{ addon.description | strip_html | truncate: 80 }}</span>
+              {% endif %}
+              
+              <span class="product-addons__price">
+                {% if addon_variant.compare_at_price > addon_variant.price %}
+                  <s class="product-addons__compare-price">{{ addon_variant.compare_at_price | money }}</s>
+                {% endif %}
+                + {{ addon_variant.price | money }}
+              </span>
+            </div>
+            
+          </label>
+        {% elsif block.settings.show_debug %}
+          <div class="product-addons__debug">
+            ⚠️ Product with handle "{{ addon_handle }}" not found
+          </div>
+        {% endif %}
+      {% endfor %}
+    {% endif %}
   </div>
 </div>
 {% elsif block.settings.show_debug %}
