@@ -74,7 +74,19 @@
       var form = productForms[i];
       if (!form.dataset.addonsInitialized) {
         form.dataset.addonsInitialized = 'true';
-        form.addEventListener('submit', handleFormSubmit);
+        form.addEventListener('submit', handleFormSubmit, true); // Use capture phase
+      }
+    }
+    
+    // Also hook into Hulk Product Options success callback if present
+    if (window.HulkApps && window.HulkApps.ProductOptions) {
+      var originalAddToCart = window.HulkApps.ProductOptions.addToCart;
+      if (originalAddToCart) {
+        window.HulkApps.ProductOptions.addToCart = function() {
+          var result = originalAddToCart.apply(this, arguments);
+          addAddonsToCart();
+          return result;
+        };
       }
     }
   }
@@ -93,8 +105,20 @@
         return;
       }
       
-      e.preventDefault();
-      e.stopPropagation();
+      // Check if Hulk or other apps are present - if so, don't prevent default
+      var hasThirdPartyApp = window.HulkApps || window.BOLD || document.querySelector('[data-hulk-app]');
+      
+      if (!hasThirdPartyApp) {
+        e.preventDefault();
+        e.stopPropagation();
+      } else {
+        // Let the third-party app handle the main product
+        // We'll add add-ons after a short delay
+        setTimeout(function() {
+          addAddonsToCart();
+        }, 500);
+        return;
+      }
       
       var variantInput = form.querySelector('select[name="id"], input[name="id"][type="hidden"], input[name="id"]:not([type])');
       if (!variantInput) {
@@ -152,6 +176,54 @@
     } catch (err) {
       console.error('Product addons error:', err);
     }
+  }
+  
+  function addAddonsToCart() {
+    var addonsContainer = document.querySelector('[id^="product-addons-"], .addon-options, .product-addons');
+    if (!addonsContainer) {
+      return;
+    }
+    
+    var checkedAddons = addonsContainer.querySelectorAll('.product-addons__checkbox:checked:not([disabled])');
+    if (checkedAddons.length === 0) {
+      return;
+    }
+    
+    var items = [];
+    for (var i = 0; i < checkedAddons.length; i++) {
+      var checkbox = checkedAddons[i];
+      var addonVariantId = parseInt(checkbox.dataset.variantId || checkbox.dataset.addonVariantId, 10);
+      if (addonVariantId) {
+        items.push({ id: addonVariantId, quantity: 1 });
+      }
+    }
+    
+    if (items.length === 0) {
+      return;
+    }
+    
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items: items })
+    })
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function() {
+      // Trigger cart update event for theme
+      var event;
+      if (typeof Event === 'function') {
+        event = new Event('cart:updated');
+      } else {
+        event = document.createEvent('Event');
+        event.initEvent('cart:updated', true, true);
+      }
+      document.dispatchEvent(event);
+    })
+    .catch(function(err) {
+      console.error('Failed to add add-ons to cart:', err);
+    });
   }
 
   function addItemsSequentially(items, submitBtns) {
