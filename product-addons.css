@@ -76,8 +76,8 @@
   display: block;
 }
 
-/* Selection highlight */
-.product-addons__item:has(.product-addons__checkbox:checked) {
+/* Selection highlight - using class toggled by JavaScript */
+.product-addons__item--checked {
   background-color: #f0f0f0;
   border-left: 3px solid #232323;
   padding-left: calc(0.75rem - 3px);
