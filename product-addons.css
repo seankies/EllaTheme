@@ -62,7 +62,10 @@
   font-weight: 500;
 }
 
-/* Force checkbox visibility */
+/* Force checkbox visibility 
+ * !important is required here to override potential theme-level hiding
+ * of native checkboxes, which is a common pattern in Shopify themes
+ */
 .addon-options .product-addons__checkbox,
 .product-addons .product-addons__checkbox {
   margin: 0;

@@ -187,6 +187,8 @@
   }
 
   // Reinitialize on theme section reloads
+  // Note: setupDelegatedHandlers() is not called here because handlers
+  // are attached to document and persist across section reloads
   document.addEventListener('shopify:section:load', function() {
     initCheckboxStates();
     initProductAddons();
