@@ -817,6 +817,8 @@ p.bundle_product_title {
                                                                         srcset="https://i.ytimg.com/vi/{{ media.external_id }}/maxresdefault.jpg"
                                                                         src="https://i.ytimg.com/vi/{{ media.external_id }}/maxresdefault.jpg"
                                                                         alt="{{ media.alt | escape }}"
+                                                                        width="{{ media.preview_image.width }}"
+                                                                        height="{{ media.preview_image.height }}"
                                                                         sizes="(min-width: 1200px) calc((1200px - 10rem) / 2), (min-width: 750px) calc((100vw - 11.5rem) / 2), calc(100vw - 4rem)"
                                                                         loading="lazy"
                                                                         data-sizes="auto"
@@ -831,6 +833,8 @@ p.bundle_product_title {
                                                                         srcset="{{ media | img_url: 'master' }}"
                                                                         src="{{ media | img_url: 'master' }}"
                                                                         alt="{{ media.alt | escape }}"
+                                                                        width="{{ media.preview_image.width }}"
+                                                                        height="{{ media.preview_image.height }}"
                                                                         sizes="(min-width: 1200px) calc((1200px - 10rem) / 2), (min-width: 750px) calc((100vw - 11.5rem) / 2), calc(100vw - 4rem)"
                                                                         loading="lazy"
                                                                         data-sizes="auto"
@@ -862,6 +866,8 @@ p.bundle_product_title {
                                                                     srcset="{{ media | img_url: 'master' }}"
                                                                     src="{{ media | img_url: 'master' }}"
                                                                     alt="{{ media.alt | escape }}"
+                                                                    width="{{ media.preview_image.width }}"
+                                                                    height="{{ media.preview_image.height }}"
                                                                     sizes="(min-width: 1200px) calc((1200px - 10rem) / 2), (min-width: 750px) calc((100vw - 11.5rem) / 2), calc(100vw - 4rem)"
                                                                     loading="lazy"
                                                                     data-sizes="auto"
@@ -985,7 +991,7 @@ p.bundle_product_title {
                                                 {%- when 'image' -%}
                                                     <div class="productView-thumbnail{% if show_variant_image_group %} filter-{{ media.alt | escape | downcase | replace: ' ', '-' | replace: '(', '-' | replace: ')', '-' }}{% endif %}" data-media-id="{{ section.id }}-{{ media.id }}">
                                                         <div class="productView-thumbnail-link" data-image="{{ media | img_url: 'large' }}">
-                                                            <img {% if settings.enable_lazyload and forloop.index > 4 %}data-{% endif %}srcset="{%- if thumnail_layout == '3' -%}{{ media | img_url: 'medium' }}{% else %}{{ media | img_url: 'compact' }}{% endif %}" {% unless settings.enable_lazyload and forloop.index > 4 %}src="{%- if thumnail_layout == '3' -%}{{ media | img_url: 'medium' }}{% else %}{{ media | img_url: 'compact' }}{% endif %}"{% endunless %} alt="{{ media.alt | escape }}" {% if settings.enable_lazyload and forloop.index > 4 %}class="lazyload" loading="lazy"{% endif %} />
+                                                            <img {% if settings.enable_lazyload and forloop.index > 4 %}data-{% endif %}srcset="{%- if thumnail_layout == '3' -%}{{ media | img_url: 'medium' }}{% else %}{{ media | img_url: 'compact' }}{% endif %}" {% unless settings.enable_lazyload and forloop.index > 4 %}src="{%- if thumnail_layout == '3' -%}{{ media | img_url: 'medium' }}{% else %}{{ media | img_url: 'compact' }}{% endif %}"{% endunless %} alt="{{ media.alt | escape }}" width="{{ media.width }}" height="{{ media.height }}" {% if settings.enable_lazyload and forloop.index > 4 %}class="lazyload" loading="lazy"{% endif %} />
                                                             {%- if settings.enable_lazyload and forloop.index > 4 -%}<span class="data-lazy-loading"></span>{%- endif -%}
                                                         </div>
                                                     </div>
@@ -993,7 +999,7 @@ p.bundle_product_title {
                                                     {%- if video_layout == 'thumbnail' -%}
                                                         <div class="productView-thumbnail" data-media-id="{{ section.id }}-{{ media.id }}">
                                                             <div class="productView-thumbnail-link animated-loading">
-                                                                <img src="{%- if thumnail_layout == '3' -%}{{ media | img_url: 'large' }}{% else %}{{ media | img_url: 'medium' }}{% endif %}" alt="{{ media.alt | escape }}" loading="lazy" />
+                                                                <img src="{%- if thumnail_layout == '3' -%}{{ media | img_url: 'large' }}{% else %}{{ media | img_url: 'medium' }}{% endif %}" alt="{{ media.alt | escape }}" width="{{ media.preview_image.width }}" height="{{ media.preview_image.height }}" loading="lazy" />
                                                             </div>
                                                             <div class="productView-thumbnail-icon">
                                                                 {% render 'icon-video' %}
@@ -1004,7 +1010,7 @@ p.bundle_product_title {
                                                     {%- if video_layout == 'thumbnail' -%}
                                                         <div class="productView-thumbnail" data-media-id="{{ section.id }}-{{ media.id }}">
                                                             <div class="productView-thumbnail-link animated-loading">
-                                                                <img src="{{ media | media_tag | split: 'src="' | last | split: '">' | first }}" alt="{{ media.alt | escape }}" loading="lazy" />
+                                                                <img src="{{ media | media_tag | split: 'src="' | last | split: '">' | first }}" alt="{{ media.alt | escape }}" width="{{ media.preview_image.width }}" height="{{ media.preview_image.height }}" loading="lazy" />
                                                             </div>
                                                             <div class="productView-thumbnail-icon">
                                                                 {% render 'icon-video' %}
@@ -1014,7 +1020,7 @@ p.bundle_product_title {
                                                 {%- when 'model' -%}
                                                     <div class="productView-thumbnail" data-media-id="{{ section.id }}-{{ media.id }}">
                                                         <div class="productView-thumbnail-link animated-loading">
-                                                            <img src="{{ media | media_tag | split: 'poster="' | last | split: '">' | first }}" alt="{{ media.alt | escape }}" loading="lazy" />
+                                                            <img src="{{ media | media_tag | split: 'poster="' | last | split: '">' | first }}" alt="{{ media.alt | escape }}" width="{{ media.preview_image.width }}" height="{{ media.preview_image.height }}" loading="lazy" />
                                                         </div>
                                                         <div class="productView-thumbnail-icon">
                                                             {% render 'icon-3d-model' %}
