@@ -55,6 +55,7 @@ Supports both data-variant-id and data-addon-variant-id for backward compatibili
           {% if show_images and addon.featured_image %}
             <div class="product-addons__image image-size-{{ image_size }}">
               {% liquid
+                # Use 2x resolution for retina displays
                 if image_size == 'small'
                   assign img_width = 80
                   assign display_size = 40
