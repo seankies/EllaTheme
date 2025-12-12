@@ -1,63 +1,147 @@
 /* Product Add-ons Styling */
 .product-addons {
-  margin:  1.2rem 0;
-  padding: 0. 6rem 0;
+  margin: 1.2rem 0;
+  padding: 0.6rem 0;
   border-top: 1px solid #eee;
 }
 
 .product-addons__title {
   font-weight: 600;
-  margin:  0 0 0.5rem;
+  margin: 0 0 0.5rem;
   font-size: 1rem;
-  color:  #232323;
+  color: #232323;
 }
 
-. product-addons__list { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 0.45rem; 
+.product-addons__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
 }
 
-.product-addons__item { 
-  display:  flex; 
-  align-items: center; 
-  gap: 0.6rem; 
-  cursor: pointer; 
+.product-addons__item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
   font-size: 0.95rem;
-  padding: 0.25rem 0;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+  position: relative;
 }
 
 .product-addons__item:hover {
   background-color: #f9f9f9;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
+  border-color: #e6e6e6;
 }
 
-.product-addons__label { 
-  flex:  1;
+/* Hide default checkbox but keep it functional */
+.product-addons__checkbox {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+}
+
+/* Custom checkbox design */
+.product-addons__checkmark {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border: 2px solid #232323;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+/* Checkmark icon */
+.product-addons__checkmark::after {
+  content: '';
+  position: absolute;
+  display: none;
+  width: 5px;
+  height: 10px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  top: 2px;
+  left: 6px;
+}
+
+/* Checked state */
+.product-addons__checkbox:checked + .product-addons__checkmark {
+  background-color: #232323;
+  border-color: #232323;
+}
+
+.product-addons__checkbox:checked + .product-addons__checkmark::after {
+  display: block;
+}
+
+/* Thick highlight for checked items */
+.product-addons__checkbox:checked ~ .product-addons__label,
+.product-addons__checkbox:checked ~ .product-addons__price {
+  font-weight: 600;
+}
+
+/* Modern browsers with :has() support */
+.product-addons__item:has(.product-addons__checkbox:checked) {
+  background-color: #f5f5f5;
+  border-color: #232323;
+}
+
+/* Fallback for older browsers using class */
+.product-addons__item.is-selected {
+  background-color: #f5f5f5;
+  border-color: #232323;
+}
+
+.product-addons__label {
+  flex: 1;
   color: #333;
+  line-height: 1.4;
 }
 
-.product-addons__price { 
-  color: #666; 
+.product-addons__price {
+  color: #666;
   white-space: nowrap;
   font-weight: 500;
+  margin-left: auto;
 }
 
-. product-addons__checkbox {
-  margin:  0;
-  width: 16px;
-  height: 16px;
-  accent-color: #232323;
+/* Focus state for accessibility */
+.product-addons__checkbox:focus + .product-addons__checkmark {
+  outline: 2px solid #4a90e2;
+  outline-offset: 2px;
 }
 
 @media (max-width: 767px) {
   .product-addons {
-    margin:  1rem 0;
-    padding:  0.5rem 0;
+    margin: 1rem 0;
+    padding: 0.5rem 0;
   }
   
   .product-addons__item {
     font-size: 0.9rem;
+    padding: 0.4rem;
+  }
+  
+  .product-addons__checkmark {
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+  }
+  
+  .product-addons__checkmark::after {
+    width: 4px;
+    height: 9px;
+    left: 5px;
+    top: 1px;
   }
 }
