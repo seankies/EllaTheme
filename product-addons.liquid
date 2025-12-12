@@ -6,13 +6,15 @@ Supports product_list (product picker) and addon_products (handles) for flexibil
 
 {% liquid
   # Support both product_list (new) and addon_products (legacy)
-  assign use_product_list = false
+  # Always try product_list first (theme editor method)
   assign addon_products = block.settings.product_list
+  assign addon_products_handles = block.settings.addon_products | split: ','
   
-  if addon_products.size > 0
+  # Determine which method to use
+  # If product_list exists (even if empty), use it; otherwise use handles
+  assign use_product_list = false
+  if addon_products != blank
     assign use_product_list = true
-  else
-    assign addon_products_handles = block.settings.addon_products | split: ','
   endif
   
   assign show_images = block.settings.show_images
@@ -22,7 +24,7 @@ Supports product_list (product picker) and addon_products (handles) for flexibil
   
   # Determine if we should render the block
   assign should_render = false
-  if use_product_list
+  if use_product_list and addon_products.size > 0
     assign should_render = true
   endif
   unless use_product_list
