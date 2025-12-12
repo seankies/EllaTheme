@@ -1,0 +1,68 @@
+{% comment %}
+  Product Add-ons Block - Legacy Settings Support
+  Supports product_1...product_10, variant_id_1...variant_id_10, label_override_1...label_override_10, show_price_1...show_price_10
+{% endcomment %}
+
+{% assign has_addons = false %}
+{% for i in (1..10) %}
+  {% assign product_key = 'product_' | append: i %}
+  {% assign variant_key = 'variant_id_' | append: i %}
+  {% assign product_handle = block.settings[product_key] %}
+  {% assign variant_id = block.settings[variant_key] %}
+  {% if product_handle != blank and variant_id != blank %}
+    {% assign has_addons = true %}
+    {% break %}
+  {% endif %}
+{% endfor %}
+
+{% if has_addons %}
+<div id="product-addons-{{ section.id }}" class="product-addons" data-product-addons>
+  <h4 class="product-addons__title">{{ block.settings.addons_title | default: 'Add-ons' }}</h4>
+  <div class="product-addons__list">
+    {% for i in (1..10) %}
+      {% assign product_key = 'product_' | append: i %}
+      {% assign variant_key = 'variant_id_' | append: i %}
+      {% assign label_key = 'label_override_' | append: i %}
+      {% assign show_price_key = 'show_price_' | append: i %}
+      
+      {% assign product_handle = block.settings[product_key] %}
+      {% assign variant_id = block.settings[variant_key] %}
+      {% assign label_override = block.settings[label_key] %}
+      {% assign show_price = block.settings[show_price_key] %}
+      
+      {% if product_handle != blank and variant_id != blank %}
+        {% assign addon_product = all_products[product_handle] %}
+        {% if addon_product and addon_product.available %}
+          {% assign addon_variant = addon_product.variants | where: "id", variant_id | first %}
+          {% if addon_variant == blank %}
+            {% assign addon_variant = addon_product.selected_or_first_available_variant %}
+          {% endif %}
+          
+          {% if addon_variant %}
+            <label class="product-addons__item" data-addon-item>
+              <input
+                type="checkbox"
+                class="product-addons__checkbox"
+                data-addon-variant-id="{{ addon_variant.id }}"
+                data-addon-price="{{ addon_variant.price }}"
+                data-addon-title="{{ addon_product.title | escape }}"
+              />
+              <span class="product-addons__checkmark"></span>
+              <span class="product-addons__label">
+                {% if label_override != blank %}
+                  {{ label_override }}
+                {% else %}
+                  {{ addon_product.title }}
+                {% endif %}
+              </span>
+              {% if show_price == nil or show_price == true %}
+                <span class="product-addons__price">+ {{ addon_variant.price | money }}</span>
+              {% endif %}
+            </label>
+          {% endif %}
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
