@@ -1,10 +1,11 @@
 {% comment %}
 Product Add-ons Block - Complete implementation
+Supports both data-variant-id and data-addon-variant-id for backward compatibility
 {% endcomment %}
 
 {% assign addon_products = block.settings.addon_products | split: ',' %}
-{% if addon_products. size > 0 %}
-<div id="product-addons-{{ section.id }}" class="product-addons">
+{% if addon_products.size > 0 %}
+<div id="product-addons-{{ section.id }}" class="product-addons addon-options">
   <h4 class="product-addons__title">{{ block.settings.addons_title | default: 'Add-ons' }}</h4>
   <div class="product-addons__list">
     {% for addon_handle in addon_products %}
@@ -12,16 +13,18 @@ Product Add-ons Block - Complete implementation
       {% assign addon = all_products[addon_handle] %}
       {% if addon and addon.available %}
         {% assign addon_variant = addon.selected_or_first_available_variant %}
-        <label class="product-addons__item">
+        <label class="product-addons__item" data-addon-item>
           <input
             type="checkbox"
             class="product-addons__checkbox"
+            data-variant-id="{{ addon_variant.id }}"
             data-addon-variant-id="{{ addon_variant.id }}"
             data-addon-price="{{ addon_variant.price }}"
             data-addon-title="{{ addon.title | escape }}"
           />
+          <span class="product-addons__checkmark"></span>
           <span class="product-addons__label">{{ addon.title }}</span>
-          <span class="product-addons__price">+ {{ addon_variant. price | money }}</span>
+          <span class="product-addons__price">+ {{ addon_variant.price | money }}</span>
         </label>
       {% endif %}
     {% endfor %}

@@ -6,6 +6,7 @@
 {{ 'component-tab.css' | asset_url | stylesheet_tag }}
 {{ 'component-product-form.css' | asset_url | stylesheet_tag }}
 {{ 'component-grid.css' | asset_url | stylesheet_tag }}
+{{ 'product-addons.css' | asset_url | stylesheet_tag }}
 
 {% assign product_page_layout = settings.product_page_layout %}
 
@@ -3321,6 +3322,54 @@
             ]
         },
         {
+            "type": "product_addons",
+            "name": "Product Add-ons",
+            "limit": 1,
+            "settings": [
+                {
+                    "type": "paragraph",
+                    "content": "Allow customers to add optional products when purchasing this item. Enter product handles separated by commas."
+                },
+                {
+                    "type": "text",
+                    "id": "addons_title",
+                    "label": "Title",
+                    "default": "Add-ons"
+                },
+                {
+                    "type": "textarea",
+                    "id": "addon_products",
+                    "label": "Product Handles",
+                    "info": "Enter product handles separated by commas (e.g., product-handle-1, product-handle-2)",
+                    "placeholder": "product-handle-1, product-handle-2"
+                },
+                {
+                    "type": "header",
+                    "content": "Spacing"
+                },
+                {
+                    "type": "range",
+                    "id": "spacing_top",
+                    "label": "Top spacing",
+                    "min": 0,
+                    "max": 100,
+                    "step": 1,
+                    "unit": "px",
+                    "default": 20
+                },
+                {
+                    "type": "range",
+                    "id": "spacing_bottom",
+                    "label": "Bottom spacing",
+                    "min": 0,
+                    "max": 100,
+                    "step": 1,
+                    "unit": "px",
+                    "default": 20
+                }
+            ]
+        },
+        {
             "type": "delivery_time",
             "name": "t:sections.main-product.settings.header__24.content",
             "settings": [
@@ -3531,4 +3580,7 @@
         }
     ]
 }
+{% endschema %}
+
+<script src="{{ 'product-addons.js' | asset_url }}" defer></script>
 {% endschema %}

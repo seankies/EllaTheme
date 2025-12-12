@@ -1,63 +1,120 @@
-/* Product Add-ons Styling */
+/* Product Add-ons Styling - Scoped to .addon-options and .product-addons */
+.addon-options,
 .product-addons {
-  margin:  1.2rem 0;
-  padding: 0. 6rem 0;
+  margin: 1.2rem 0;
+  padding: 0.6rem 0;
   border-top: 1px solid #eee;
 }
 
-.product-addons__title {
+.addon-options .product-addons__title,
+.product-addons .product-addons__title {
   font-weight: 600;
-  margin:  0 0 0.5rem;
+  margin: 0 0 0.5rem;
   font-size: 1rem;
-  color:  #232323;
+  color: #232323;
 }
 
-. product-addons__list { 
+.addon-options .product-addons__list,
+.product-addons .product-addons__list { 
   display: flex; 
   flex-direction: column; 
   gap: 0.45rem; 
 }
 
-.product-addons__item { 
-  display:  flex; 
+.addon-options .product-addons__item,
+.product-addons .product-addons__item { 
+  display: flex; 
   align-items: center; 
   gap: 0.6rem; 
   cursor: pointer; 
   font-size: 0.95rem;
-  padding: 0.25rem 0;
-}
-
-.product-addons__item:hover {
-  background-color: #f9f9f9;
-  padding: 0.25rem 0.5rem;
+  padding: 0.5rem 0.75rem;
   border-radius: 4px;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+  position: relative;
 }
 
-.product-addons__label { 
-  flex:  1;
+.addon-options .product-addons__item:hover,
+.product-addons .product-addons__item:hover {
+  background-color: #f9f9f9;
+  border-color: #e0e0e0;
+}
+
+/* Selected state styling with highlight */
+.addon-options .product-addons__item.selected,
+.product-addons .product-addons__item.selected {
+  background-color: #f0f8ff;
+  border-color: #232323;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.addon-options .product-addons__label,
+.product-addons .product-addons__label { 
+  flex: 1;
   color: #333;
 }
 
-.product-addons__price { 
+.addon-options .product-addons__price,
+.product-addons .product-addons__price { 
   color: #666; 
   white-space: nowrap;
   font-weight: 500;
 }
 
-. product-addons__checkbox {
-  margin:  0;
-  width: 16px;
-  height: 16px;
+/* Force checkbox visibility */
+.addon-options .product-addons__checkbox,
+.product-addons .product-addons__checkbox {
+  margin: 0;
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px;
+  min-height: 18px;
   accent-color: #232323;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: inline-block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  position: relative !important;
+  appearance: auto !important;
+  -webkit-appearance: checkbox !important;
+  -moz-appearance: checkbox !important;
+}
+
+/* Custom checkmark for visual feedback */
+.addon-options .product-addons__checkmark,
+.product-addons .product-addons__checkmark {
+  display: none;
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #232323;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.addon-options .product-addons__checkmark::before,
+.product-addons .product-addons__checkmark::before {
+  content: '✓';
+}
+
+.addon-options .product-addons__item.selected .product-addons__checkmark,
+.product-addons .product-addons__item.selected .product-addons__checkmark {
+  display: block;
 }
 
 @media (max-width: 767px) {
+  .addon-options,
   .product-addons {
-    margin:  1rem 0;
-    padding:  0.5rem 0;
+    margin: 1rem 0;
+    padding: 0.5rem 0;
   }
   
-  .product-addons__item {
+  .addon-options .product-addons__item,
+  .product-addons .product-addons__item {
     font-size: 0.9rem;
+    padding: 0.45rem 0.6rem;
   }
 }

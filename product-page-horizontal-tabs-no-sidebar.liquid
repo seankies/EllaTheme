@@ -1203,6 +1203,18 @@
                                         {%- endif -%}
                                     {%- when 'custom_liquid' -%}
                                         {{ block.settings.custom_liquid }}
+                                    {%- when 'product_addons' -%}
+                                        <div class="productView-moreItem{% if settings.banner_animation == 'effect_fade_up' %} scroll-trigger animate--slide-in{% endif %}"
+                                            style="--spacing-top: {{ spacing_top | append: 'px' }};
+                                            --spacing-bottom: {{ spacing_bottom | append: 'px' }};
+                                            "
+                                            {{ block.shopify_attributes }}
+                                        >
+                                            {% render 'product-addons',
+                                                block: block,
+                                                section: section
+                                            %}
+                                        </div>
                                     {%- when 'complementary_products' -%}
                                         <div class="productView-moreItem{% if settings.banner_animation == 'effect_fade_up' %} scroll-trigger animate--slide-in{% endif %}"
                                             style="--spacing-top: {{ spacing_top | append: 'px' }};

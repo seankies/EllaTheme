@@ -1,111 +1,192 @@
 /**
  * Product Add-ons functionality
+ * Supports both data-variant-id and data-addon-variant-id
+ * Implements delegated selection, visual feedback, and robust add-to-cart
  */
 (function() {
   'use strict';
 
+  // Initialize checkbox state synchronization
+  function syncCheckboxState(checkbox) {
+    const item = checkbox.closest('[data-addon-item]');
+    if (!item) return;
+    
+    if (checkbox.checked) {
+      item.classList.add('selected');
+    } else {
+      item.classList.remove('selected');
+    }
+  }
+
+  // Initialize all checkboxes on page load
+  function initCheckboxStates() {
+    const allCheckboxes = document.querySelectorAll('.product-addons__checkbox, .addon-options .product-addons__checkbox');
+    allCheckboxes.forEach(function(checkbox) {
+      syncCheckboxState(checkbox);
+    });
+  }
+
+  // Delegated event handling for checkbox changes
+  function setupDelegatedHandlers() {
+    document.addEventListener('change', function(e) {
+      if (e.target.matches('.product-addons__checkbox, .addon-options .product-addons__checkbox')) {
+        syncCheckboxState(e.target);
+      }
+    });
+
+    // Also handle click events on the label for better UX
+    document.addEventListener('click', function(e) {
+      const item = e.target.closest('[data-addon-item]');
+      if (item && !e.target.matches('input[type="checkbox"]')) {
+        const checkbox = item.querySelector('.product-addons__checkbox');
+        if (checkbox) {
+          checkbox.checked = !checkbox.checked;
+          syncCheckboxState(checkbox);
+        }
+      }
+    });
+  }
+
   function initProductAddons() {
     const productForms = document.querySelectorAll('form[action^="/cart/add"], form[action*="/cart/add"]');
     
-    if (! productForms || productForms.length === 0) return;
+    if (!productForms || productForms.length === 0) return;
     
     productForms.forEach(function(form) {
-      form.addEventListener('submit', function(e) {
-        try {
-          const addonsContainer = form.querySelector('[id^="product-addons-"]');
-          if (! addonsContainer) return;
-          
-          const checkedAddons = Array.from(addonsContainer.querySelectorAll('. product-addons__checkbox:checked'));
-          if (checkedAddons.length === 0) return;
-          
-          e.preventDefault();
-          
-          // Get main product data
-          const variantInput = form.querySelector('select[name="id"], input[name="id"][type="hidden"], input[name="id"]:not([type])');
-          if (!variantInput) {
-            console.error('Could not find variant input');
-            return;
-          }
-          
-          const qtyInput = form. querySelector('input[name="quantity"]');
-          const mainVariantId = parseInt(variantInput. value);
-          const mainQty = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
-          
-          if (! mainVariantId) {
-            console.error('Invalid variant ID');
-            return;
-          }
-          
-          // Disable submit buttons
-          const submitBtns = form. querySelectorAll('[type="submit"]');
-          submitBtns.forEach(btn => {
-            btn.setAttribute('disabled', 'disabled');
-            btn.textContent = 'Adding...';
-          });
-          
-          // Add main product first
-          fetch('/cart/add. js', {
-            method: 'POST',
-            headers:  { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: mainVariantId, quantity: mainQty })
-          })
-          .then(response => {
-            if (!response.ok) throw new Error('Failed to add main product');
-            return response.json();
-          })
-          .then(() => {
-            // Add each addon sequentially
-            let sequence = Promise.resolve();
-            checkedAddons. forEach(checkbox => {
-              const addonVariantId = parseInt(checkbox.dataset.addonVariantId);
-              if (! addonVariantId) return;
-              
-              sequence = sequence.then(() =>
-                fetch('/cart/add. js', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ id: addonVariantId, quantity:  1 })
-                })
-                .then(response => {
-                  if (!response.ok) throw new Error(`Failed to add addon ${addonVariantId}`);
-                  return response.json();
-                })
-                .catch(err => {
-                  console.warn('Error adding addon:', addonVariantId, err);
-                })
-              );
-            });
-            return sequence;
-          })
-          .then(() => {
-            // Success - redirect to cart
-            window.location.href = '/cart';
-          })
-          .catch(err => {
-            console.error('Error adding to cart:', err);
-            alert('Sorry, there was an error adding items to your cart.  Please try again.');
-            
-            // Re-enable buttons
-            submitBtns.forEach(btn => {
-              btn.removeAttribute('disabled');
-              btn.textContent = 'Add to Cart';
-            });
-          });
-          
-        } catch (err) {
-          console.error('Product addons error:', err);
+      // Remove existing listener if any
+      form.removeEventListener('submit', handleFormSubmit);
+      form.addEventListener('submit', handleFormSubmit);
+    });
+  }
+
+  function handleFormSubmit(e) {
+    try {
+      const form = e.target;
+      const addonsContainer = form.querySelector('[id^="product-addons-"], .addon-options, .product-addons');
+      if (!addonsContainer) return;
+      
+      const checkedAddons = Array.from(addonsContainer.querySelectorAll('.product-addons__checkbox:checked'));
+      if (checkedAddons.length === 0) return;
+      
+      e.preventDefault();
+      
+      // Get main product data
+      const variantInput = form.querySelector('select[name="id"], input[name="id"][type="hidden"], input[name="id"]:not([type])');
+      if (!variantInput) {
+        console.error('Could not find variant input');
+        return;
+      }
+      
+      const qtyInput = form.querySelector('input[name="quantity"]');
+      const mainVariantId = parseInt(variantInput.value);
+      const mainQty = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
+      
+      if (!mainVariantId) {
+        console.error('Invalid variant ID');
+        return;
+      }
+      
+      // Disable submit buttons
+      const submitBtns = form.querySelectorAll('[type="submit"]');
+      submitBtns.forEach(function(btn) {
+        btn.setAttribute('disabled', 'disabled');
+        const originalText = btn.textContent;
+        btn.setAttribute('data-original-text', originalText);
+        btn.textContent = 'Adding...';
+      });
+      
+      // Build items array for cart
+      const items = [{ id: mainVariantId, quantity: mainQty }];
+      
+      checkedAddons.forEach(function(checkbox) {
+        // Support both data-variant-id and data-addon-variant-id
+        const addonVariantId = parseInt(checkbox.dataset.variantId || checkbox.dataset.addonVariantId);
+        if (addonVariantId) {
+          items.push({ id: addonVariantId, quantity: 1 });
         }
       });
+      
+      // Try adding all items with /cart/add.js first
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: items })
+      })
+      .then(function(response) {
+        if (!response.ok) {
+          throw new Error('Failed to add items to cart');
+        }
+        return response.json();
+      })
+      .then(function() {
+        // Success - redirect to cart
+        window.location.href = '/cart';
+      })
+      .catch(function(err) {
+        console.warn('Bulk add failed, trying fallback method:', err);
+        // Fallback: Add items sequentially using /cart/add
+        addItemsSequentially(items, submitBtns);
+      });
+      
+    } catch (err) {
+      console.error('Product addons error:', err);
+    }
+  }
+
+  // Fallback method: add items one by one using form submission
+  function addItemsSequentially(items, submitBtns) {
+    let formData = new FormData();
+    
+    // Try sequential AJAX adds first
+    let sequence = Promise.resolve();
+    items.forEach(function(item) {
+      sequence = sequence.then(function() {
+        return fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: item.id, quantity: item.quantity })
+        })
+        .then(function(response) {
+          if (!response.ok) throw new Error('Failed to add item ' + item.id);
+          return response.json();
+        });
+      });
     });
+    
+    sequence
+      .then(function() {
+        window.location.href = '/cart';
+      })
+      .catch(function(err) {
+        console.error('Sequential add also failed:', err);
+        // Last resort: use traditional form submission for main product
+        alert('Sorry, there was an error adding items to your cart. Please try again.');
+        
+        // Re-enable buttons
+        submitBtns.forEach(function(btn) {
+          btn.removeAttribute('disabled');
+          const originalText = btn.getAttribute('data-original-text') || 'Add to Cart';
+          btn.textContent = originalText;
+        });
+      });
   }
 
   // Initialize when DOM is ready
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initProductAddons);
+    document.addEventListener('DOMContentLoaded', function() {
+      setupDelegatedHandlers();
+      initCheckboxStates();
+      initProductAddons();
+    });
   } else {
+    setupDelegatedHandlers();
+    initCheckboxStates();
     initProductAddons();
   }
 
   // Reinitialize on theme section reloads
-  document.addEventListener('shopify:section:load', initProductAddons);
+  document.addEventListener('shopify:section:load', function() {
+    initCheckboxStates();
+    initProductAddons();
+  });
 })();
