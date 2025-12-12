@@ -3333,15 +3333,108 @@
                 {
                     "type": "text",
                     "id": "addons_title",
-                    "label": "Title",
-                    "default": "Add-ons"
+                    "label": "Block Title",
+                    "default": "Add-ons",
+                    "info": "Leave blank to hide the title"
+                },
+                {
+                    "type": "textarea",
+                    "id": "addons_description",
+                    "label": "Block Description",
+                    "placeholder": "Select additional items to enhance your purchase",
+                    "info": "Optional description shown below the title"
                 },
                 {
                     "type": "textarea",
                     "id": "addon_products",
                     "label": "Product Handles",
-                    "info": "Enter product handles separated by commas (e.g., product-handle-1, product-handle-2)",
+                    "info": "Enter product handles separated by commas (e.g., extended-warranty, gift-wrapping)",
                     "placeholder": "product-handle-1, product-handle-2"
+                },
+                {
+                    "type": "header",
+                    "content": "Display Options"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_images",
+                    "label": "Show product images",
+                    "default": true
+                },
+                {
+                    "type": "select",
+                    "id": "image_size",
+                    "label": "Image size",
+                    "options": [
+                        {
+                            "value": "small",
+                            "label": "Small (40x40px)"
+                        },
+                        {
+                            "value": "medium",
+                            "label": "Medium (60x60px)"
+                        },
+                        {
+                            "value": "large",
+                            "label": "Large (80x80px)"
+                        }
+                    ],
+                    "default": "small"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_descriptions",
+                    "label": "Show product descriptions",
+                    "default": false,
+                    "info": "Show short excerpt of add-on product description"
+                },
+                {
+                    "type": "select",
+                    "id": "layout_style",
+                    "label": "Layout style",
+                    "options": [
+                        {
+                            "value": "compact",
+                            "label": "Compact List"
+                        },
+                        {
+                            "value": "list",
+                            "label": "Spacious List"
+                        },
+                        {
+                            "value": "card",
+                            "label": "Card Grid"
+                        }
+                    ],
+                    "default": "compact"
+                },
+                {
+                    "type": "header",
+                    "content": "Colors"
+                },
+                {
+                    "type": "color",
+                    "id": "title_color",
+                    "label": "Title color",
+                    "default": "#232323"
+                },
+                {
+                    "type": "color",
+                    "id": "border_color",
+                    "label": "Border color",
+                    "default": "#eeeeee"
+                },
+                {
+                    "type": "color",
+                    "id": "selected_background",
+                    "label": "Selected item background",
+                    "default": "#f0f8ff"
+                },
+                {
+                    "type": "color",
+                    "id": "selected_border_color",
+                    "label": "Selected item border",
+                    "default": "#232323"
                 },
                 {
                     "type": "header",
@@ -3366,6 +3459,17 @@
                     "step": 1,
                     "unit": "px",
                     "default": 20
+                },
+                {
+                    "type": "header",
+                    "content": "Debug"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_debug",
+                    "label": "Show debug messages",
+                    "default": false,
+                    "info": "Display warnings for products not found (for development only)"
                 }
             ]
         },

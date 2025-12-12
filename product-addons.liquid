@@ -3,30 +3,96 @@ Product Add-ons Block - Complete implementation
 Supports both data-variant-id and data-addon-variant-id for backward compatibility
 {% endcomment %}
 
-{% assign addon_products = block.settings.addon_products | split: ',' %}
+{% liquid
+  assign addon_products = block.settings.addon_products | split: ','
+  assign show_images = block.settings.show_images
+  assign show_descriptions = block.settings.show_descriptions
+  assign image_size = block.settings.image_size | default: 'small'
+  assign layout_style = block.settings.layout_style | default: 'compact'
+%}
+
 {% if addon_products.size > 0 %}
-<div id="product-addons-{{ section.id }}" class="product-addons addon-options">
-  <h4 class="product-addons__title">{{ block.settings.addons_title | default: 'Add-ons' }}</h4>
+<div id="product-addons-{{ section.id }}" class="product-addons addon-options layout-{{ layout_style }}"
+     style="--addon-title-color: {{ block.settings.title_color | default: '#232323' }};
+            --addon-border-color: {{ block.settings.border_color | default: '#eee' }};
+            --addon-selected-bg: {{ block.settings.selected_background | default: '#f0f8ff' }};
+            --addon-selected-border: {{ block.settings.selected_border_color | default: '#232323' }};">
+  
+  {% if block.settings.addons_title != blank %}
+    <h4 class="product-addons__title">{{ block.settings.addons_title }}</h4>
+  {% endif %}
+  
+  {% if block.settings.addons_description != blank %}
+    <p class="product-addons__description">{{ block.settings.addons_description }}</p>
+  {% endif %}
+  
   <div class="product-addons__list">
     {% for addon_handle in addon_products %}
       {% assign addon_handle = addon_handle | strip %}
       {% assign addon = all_products[addon_handle] %}
-      {% if addon and addon.available %}
+      
+      {% if addon.id != blank %}
         {% assign addon_variant = addon.selected_or_first_available_variant %}
-        <label class="product-addons__item" data-addon-item>
-          <input
-            type="checkbox"
-            class="product-addons__checkbox"
-            data-variant-id="{{ addon_variant.id }}"
-            data-addon-variant-id="{{ addon_variant.id }}"
-            data-addon-price="{{ addon_variant.price }}"
-            data-addon-title="{{ addon.title | escape }}"
-          />
-          <span class="product-addons__checkmark"></span>
-          <span class="product-addons__label">{{ addon.title }}</span>
-          <span class="product-addons__price">+ {{ addon_variant.price | money }}</span>
+        {% assign is_available = addon.available %}
+        
+        <label class="product-addons__item {% unless is_available %}unavailable{% endunless %}" 
+               data-addon-item
+               data-product-id="{{ addon.id }}">
+          
+          <div class="product-addons__checkbox-wrapper">
+            <input
+              type="checkbox"
+              class="product-addons__checkbox"
+              data-variant-id="{{ addon_variant.id }}"
+              data-addon-variant-id="{{ addon_variant.id }}"
+              data-addon-price="{{ addon_variant.price }}"
+              data-addon-title="{{ addon.title | escape }}"
+              {% unless is_available %}disabled{% endunless %}
+            />
+            <span class="product-addons__checkmark"></span>
+          </div>
+          
+          {% if show_images and addon.featured_image %}
+            <div class="product-addons__image image-size-{{ image_size }}">
+              <img src="{{ addon.featured_image | image_url: width: 100 }}" 
+                   alt="{{ addon.title | escape }}"
+                   width="{% if image_size == 'small' %}40{% elsif image_size == 'medium' %}60{% else %}80{% endif %}"
+                   height="{% if image_size == 'small' %}40{% elsif image_size == 'medium' %}60{% else %}80{% endif %}"
+                   loading="lazy">
+            </div>
+          {% endif %}
+          
+          <div class="product-addons__content">
+            <span class="product-addons__label">
+              {{ addon.title }}
+              {% unless is_available %}
+                <span class="product-addons__sold-out">(Sold Out)</span>
+              {% endunless %}
+            </span>
+            
+            {% if show_descriptions and addon.description != blank %}
+              <span class="product-addons__excerpt">{{ addon.description | strip_html | truncate: 80 }}</span>
+            {% endif %}
+            
+            <span class="product-addons__price">
+              {% if addon_variant.compare_at_price > addon_variant.price %}
+                <s class="product-addons__compare-price">{{ addon_variant.compare_at_price | money }}</s>
+              {% endif %}
+              + {{ addon_variant.price | money }}
+            </span>
+          </div>
+          
         </label>
+        
+      {% else %}
+        {% comment %}Debug: Product not found{% endcomment %}
+        {% if block.settings.show_debug %}
+          <div class="product-addons__debug">
+            ⚠️ Product with handle "{{ addon_handle }}" not found
+          </div>
+        {% endif %}
       {% endif %}
+      
     {% endfor %}
   </div>
 </div>
