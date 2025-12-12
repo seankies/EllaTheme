@@ -90,7 +90,14 @@
   font-weight: 600;
 }
 
+/* Modern browsers with :has() support */
 .product-addons__item:has(.product-addons__checkbox:checked) {
+  background-color: #f5f5f5;
+  border-color: #232323;
+}
+
+/* Fallback for older browsers using class */
+.product-addons__item.is-selected {
   background-color: #f5f5f5;
   border-color: #232323;
 }

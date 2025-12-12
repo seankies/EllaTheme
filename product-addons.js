@@ -13,6 +13,24 @@
       // Remove any existing listeners to avoid duplicates
       form.removeEventListener('submit', handleFormSubmit);
       form.addEventListener('submit', handleFormSubmit);
+      
+      // Add checkbox change listeners for highlighting (fallback for older browsers)
+      const addonsContainer = form.querySelector('[data-product-addons]');
+      if (addonsContainer) {
+        const checkboxes = addonsContainer.querySelectorAll('.product-addons__checkbox');
+        checkboxes.forEach(function(checkbox) {
+          checkbox.addEventListener('change', function() {
+            const item = checkbox.closest('.product-addons__item');
+            if (item) {
+              if (checkbox.checked) {
+                item.classList.add('is-selected');
+              } else {
+                item.classList.remove('is-selected');
+              }
+            }
+          });
+        });
+      }
     });
   }
 
