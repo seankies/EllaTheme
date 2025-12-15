@@ -1,23 +1,23 @@
 {% comment %}
-Product Add-ons Block - Complete implementation
-Supports both product-addons and addon-options class names
-Includes data-variant-id and data-addon-variant-id attributes for compatibility
+  Addon Options Snippet
+  Renders add-on product options as separate line items with variant IDs
+  Supports both data-variant-id and data-addon-variant-id attributes (legacy)
 {% endcomment %}
 
 {% assign addon_products = block.settings.addon_products | split: ',' %}
 {% if addon_products.size > 0 %}
-<div id="product-addons-{{ section.id }}" class="product-addons">
-  <h4 class="product-addons__title">{{ block.settings.addons_title | default: 'Add-ons' }}</h4>
-  <div class="product-addons__list">
+<div id="product-addons-{{ section.id }}" class="addon-options">
+  <h4 class="addon-options__title">{{ block.settings.addons_title | default: 'Add-ons' }}</h4>
+  <div class="addon-options__list">
     {% for addon_handle in addon_products %}
       {% assign addon_handle = addon_handle | strip %}
       {% assign addon = all_products[addon_handle] %}
       {% if addon and addon.available %}
         {% assign addon_variant = addon.selected_or_first_available_variant %}
-        <label class="product-addons__item">
+        <label class="addon-options__item">
           <input
             type="checkbox"
-            class="product-addons__checkbox"
+            class="addon-options__checkbox"
             data-variant-id="{{ addon_variant.id }}"
             data-addon-variant-id="{{ addon_variant.id }}"
             value="{{ addon_variant.id }}"
@@ -25,8 +25,8 @@ Includes data-variant-id and data-addon-variant-id attributes for compatibility
             data-addon-title="{{ addon.title | escape }}"
             data-addon-sku="{{ addon_variant.sku | escape }}"
           />
-          <span class="product-addons__label">{{ addon.title }}</span>
-          <span class="product-addons__price">+ {{ addon_variant.price | money }}</span>
+          <span class="addon-options__label">{{ addon.title }}</span>
+          <span class="addon-options__price">+ {{ addon_variant.price | money }}</span>
         </label>
       {% endif %}
     {% endfor %}
