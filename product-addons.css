@@ -101,6 +101,7 @@
 }
 
 /* Selected state with highlight and checkmark */
+/* Modern browsers with :has() support */
 .addon-options__item:has(.addon-options__checkbox:checked) {
   background-color: #f0f8ff;
   border-color: #232323;
@@ -108,6 +109,22 @@
 }
 
 .addon-options__item:has(.addon-options__checkbox:checked)::after {
+  content: '✓';
+  position: absolute;
+  right: 0.5rem;
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #232323;
+}
+
+/* Fallback for browsers without :has() support */
+.addon-options__item.is-selected {
+  background-color: #f0f8ff;
+  border-color: #232323;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.addon-options__item.is-selected::after {
   content: '✓';
   position: absolute;
   right: 0.5rem;

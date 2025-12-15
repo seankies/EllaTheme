@@ -15,6 +15,25 @@
       const submitBtns = form.querySelectorAll('[type="submit"]');
       const originalButtonTexts = Array.from(submitBtns).map(btn => btn.textContent);
       
+      // Setup checkbox change handlers for visual feedback (fallback for :has())
+      const addonsContainer = form.querySelector('[id^="product-addons-"], .addon-options');
+      if (addonsContainer) {
+        const checkboxes = addonsContainer.querySelectorAll('.addon-options__checkbox, .product-addons__checkbox');
+        checkboxes.forEach(function(checkbox) {
+          // Toggle selected class on parent label for browsers without :has() support
+          checkbox.addEventListener('change', function() {
+            const parentLabel = checkbox.closest('.addon-options__item, .product-addons__item');
+            if (parentLabel) {
+              if (checkbox.checked) {
+                parentLabel.classList.add('is-selected');
+              } else {
+                parentLabel.classList.remove('is-selected');
+              }
+            }
+          });
+        });
+      }
+      
       form.addEventListener('submit', function(e) {
         try {
           const addonsContainer = form.querySelector('[id^="product-addons-"], .addon-options');
