@@ -11,6 +11,10 @@
     <script src="{{ 'animations.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
 
+{%- if request.page_type == 'product' -%}
+    <script src="{{ 'product-addons.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
 {% liquid
     if settings.enable_currencies
         if settings.currency_type == 'shopify_payment'

@@ -34,6 +34,10 @@
 
 {{ 'component-predictive-search.css' | asset_url | stylesheet_tag }}
 
+{%- if request.page_type == 'product' -%}
+	{{ 'product-addons.css' | asset_url | stylesheet_tag }}
+{%- endif -%}
+
 {%- unless request.page_type == 'product' -%}
 	<link rel="stylesheet" href="{{ 'component-product-form.css' | asset_url }}" media="print" onload="this.media='all'">
 	<link rel="stylesheet" href="{{ 'component-price.css' | asset_url }}" media="print" onload="this.media='all'">
