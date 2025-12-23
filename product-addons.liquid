@@ -1,30 +1,63 @@
 {% comment %}
-Product Add-ons Block - Complete implementation
+Product Add-ons Block - Complete implementation with legacy settings support
 {% endcomment %}
 
-{% assign addon_products = block.settings.addon_products | split: ',' %}
-{% if addon_products. size > 0 %}
 <div id="product-addons-{{ section.id }}" class="product-addons">
   <h4 class="product-addons__title">{{ block.settings.addons_title | default: 'Add-ons' }}</h4>
   <div class="product-addons__list">
-    {% for addon_handle in addon_products %}
-      {% assign addon_handle = addon_handle | strip %}
-      {% assign addon = all_products[addon_handle] %}
-      {% if addon and addon.available %}
-        {% assign addon_variant = addon.selected_or_first_available_variant %}
-        <label class="product-addons__item">
-          <input
-            type="checkbox"
-            class="product-addons__checkbox"
-            data-addon-variant-id="{{ addon_variant.id }}"
-            data-addon-price="{{ addon_variant.price }}"
-            data-addon-title="{{ addon.title | escape }}"
-          />
-          <span class="product-addons__label">{{ addon.title }}</span>
-          <span class="product-addons__price">+ {{ addon_variant. price | money }}</span>
-        </label>
+    {% comment %} Support legacy settings mapping (product_1..product_10, variant_id_1..variant_id_10, etc.) {% endcomment %}
+    {% for i in (1..10) %}
+      {% capture product_key %}product_{{ i }}{% endcapture %}
+      {% capture variant_id_key %}variant_id_{{ i }}{% endcapture %}
+      {% capture label_override_key %}label_override_{{ i }}{% endcapture %}
+      {% capture show_price_key %}show_price_{{ i }}{% endcapture %}
+      {% capture hide_if_soldout_key %}hide_if_soldout_{{ i }}{% endcapture %}
+      
+      {% assign product_handle = block.settings[product_key] %}
+      {% assign variant_id = block.settings[variant_id_key] %}
+      {% assign label_override = block.settings[label_override_key] %}
+      {% assign show_price = block.settings[show_price_key] %}
+      {% assign hide_if_soldout = block.settings[hide_if_soldout_key] %}
+      
+      {% if product_handle != blank %}
+        {% assign addon_product = all_products[product_handle] %}
+        {% if addon_product %}
+          {% if variant_id != blank %}
+            {% assign addon_variant = addon_product.variants | where: "id", variant_id | first %}
+          {% else %}
+            {% assign addon_variant = addon_product.selected_or_first_available_variant %}
+          {% endif %}
+          
+          {% if addon_variant %}
+            {% assign should_show = true %}
+            {% if hide_if_soldout and addon_variant.available == false %}
+              {% assign should_show = false %}
+            {% endif %}
+            
+            {% if should_show %}
+              <label class="product-addons__item">
+                <input
+                  type="checkbox"
+                  class="product-addons__checkbox"
+                  data-variant-id="{{ addon_variant.id }}"
+                  data-addon-price="{{ addon_variant.price }}"
+                  data-addon-title="{{ addon_product.title | escape }}"
+                />
+                <span class="product-addons__label">
+                  {% if label_override != blank %}
+                    {{ label_override }}
+                  {% else %}
+                    {{ addon_product.title }}
+                  {% endif %}
+                </span>
+                {% if show_price == nil or show_price %}
+                  <span class="product-addons__price">+ {{ addon_variant.price | money }}</span>
+                {% endif %}
+              </label>
+            {% endif %}
+          {% endif %}
+        {% endif %}
       {% endif %}
     {% endfor %}
   </div>
 </div>
-{% endif %}
