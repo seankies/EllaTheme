@@ -6,6 +6,9 @@
 {{ 'component-tab.css' | asset_url | stylesheet_tag }}
 {{ 'component-product-form.css' | asset_url | stylesheet_tag }}
 {{ 'component-grid.css' | asset_url | stylesheet_tag }}
+{{ 'addon-options.css' | asset_url | stylesheet_tag }}
+
+<script src="{{ 'addon-options.js' | asset_url }}" defer="defer"></script>
 
 {% assign product_page_layout = settings.product_page_layout %}
 
@@ -2250,6 +2253,379 @@
                     "type": "color_background",
                     "id": "bin_bg_color_hover_gradient",
                     "label": "t:settings_schema.colors.settings.colors_name.background_hover_gradient"
+                }
+            ]
+        },
+        {
+            "type": "addon_options",
+            "name": "Add-on Options",
+            "limit": 1,
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "heading",
+                    "label": "Heading",
+                    "default": "Add-ons",
+                    "info": "Main heading for the add-ons section"
+                },
+                {
+                    "type": "range",
+                    "id": "column_count",
+                    "label": "Column count",
+                    "min": 1,
+                    "max": 3,
+                    "step": 1,
+                    "default": 1,
+                    "info": "Number of columns to display add-ons (desktop only)"
+                },
+                {
+                    "type": "select",
+                    "id": "quantity_behavior",
+                    "label": "Add-on quantity behavior",
+                    "default": "fixed",
+                    "options": [
+                        {
+                            "value": "fixed",
+                            "label": "Fixed quantity of 1"
+                        },
+                        {
+                            "value": "match_main",
+                            "label": "Match main product quantity"
+                        }
+                    ],
+                    "info": "How to handle quantities for selected add-ons"
+                },
+                {
+                    "type": "select",
+                    "id": "after_add_behavior",
+                    "label": "After adding to cart",
+                    "default": "redirect_cart",
+                    "options": [
+                        {
+                            "value": "stay",
+                            "label": "Stay on page"
+                        },
+                        {
+                            "value": "open_drawer",
+                            "label": "Open cart drawer (if available)"
+                        },
+                        {
+                            "value": "redirect_cart",
+                            "label": "Redirect to cart page"
+                        }
+                    ],
+                    "info": "What happens after successfully adding items to cart"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "tag_with_main",
+                    "label": "Tag add-ons with main product",
+                    "default": false,
+                    "info": "Add a property to add-ons referencing the main product title"
+                },
+                {
+                    "type": "header",
+                    "content": "Add-on Products"
+                },
+                {
+                    "type": "paragraph",
+                    "content": "Configure up to 10 add-on products. Each will appear as a checkbox option."
+                },
+                {
+                    "type": "product",
+                    "id": "product_1",
+                    "label": "Add-on product 1"
+                },
+                {
+                    "type": "text",
+                    "id": "variant_id_1",
+                    "label": "Variant ID (optional)",
+                    "info": "Leave blank to use first available variant"
+                },
+                {
+                    "type": "text",
+                    "id": "label_override_1",
+                    "label": "Label override (optional)",
+                    "info": "Custom label to display instead of product title"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_price_1",
+                    "label": "Show price",
+                    "default": true
+                },
+                {
+                    "type": "checkbox",
+                    "id": "hide_if_soldout_1",
+                    "label": "Hide if sold out",
+                    "default": false
+                },
+                {
+                    "type": "product",
+                    "id": "product_2",
+                    "label": "Add-on product 2"
+                },
+                {
+                    "type": "text",
+                    "id": "variant_id_2",
+                    "label": "Variant ID (optional)"
+                },
+                {
+                    "type": "text",
+                    "id": "label_override_2",
+                    "label": "Label override (optional)"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_price_2",
+                    "label": "Show price",
+                    "default": true
+                },
+                {
+                    "type": "checkbox",
+                    "id": "hide_if_soldout_2",
+                    "label": "Hide if sold out",
+                    "default": false
+                },
+                {
+                    "type": "product",
+                    "id": "product_3",
+                    "label": "Add-on product 3"
+                },
+                {
+                    "type": "text",
+                    "id": "variant_id_3",
+                    "label": "Variant ID (optional)"
+                },
+                {
+                    "type": "text",
+                    "id": "label_override_3",
+                    "label": "Label override (optional)"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_price_3",
+                    "label": "Show price",
+                    "default": true
+                },
+                {
+                    "type": "checkbox",
+                    "id": "hide_if_soldout_3",
+                    "label": "Hide if sold out",
+                    "default": false
+                },
+                {
+                    "type": "product",
+                    "id": "product_4",
+                    "label": "Add-on product 4"
+                },
+                {
+                    "type": "text",
+                    "id": "variant_id_4",
+                    "label": "Variant ID (optional)"
+                },
+                {
+                    "type": "text",
+                    "id": "label_override_4",
+                    "label": "Label override (optional)"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_price_4",
+                    "label": "Show price",
+                    "default": true
+                },
+                {
+                    "type": "checkbox",
+                    "id": "hide_if_soldout_4",
+                    "label": "Hide if sold out",
+                    "default": false
+                },
+                {
+                    "type": "product",
+                    "id": "product_5",
+                    "label": "Add-on product 5"
+                },
+                {
+                    "type": "text",
+                    "id": "variant_id_5",
+                    "label": "Variant ID (optional)"
+                },
+                {
+                    "type": "text",
+                    "id": "label_override_5",
+                    "label": "Label override (optional)"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_price_5",
+                    "label": "Show price",
+                    "default": true
+                },
+                {
+                    "type": "checkbox",
+                    "id": "hide_if_soldout_5",
+                    "label": "Hide if sold out",
+                    "default": false
+                },
+                {
+                    "type": "product",
+                    "id": "product_6",
+                    "label": "Add-on product 6"
+                },
+                {
+                    "type": "text",
+                    "id": "variant_id_6",
+                    "label": "Variant ID (optional)"
+                },
+                {
+                    "type": "text",
+                    "id": "label_override_6",
+                    "label": "Label override (optional)"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_price_6",
+                    "label": "Show price",
+                    "default": true
+                },
+                {
+                    "type": "checkbox",
+                    "id": "hide_if_soldout_6",
+                    "label": "Hide if sold out",
+                    "default": false
+                },
+                {
+                    "type": "product",
+                    "id": "product_7",
+                    "label": "Add-on product 7"
+                },
+                {
+                    "type": "text",
+                    "id": "variant_id_7",
+                    "label": "Variant ID (optional)"
+                },
+                {
+                    "type": "text",
+                    "id": "label_override_7",
+                    "label": "Label override (optional)"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_price_7",
+                    "label": "Show price",
+                    "default": true
+                },
+                {
+                    "type": "checkbox",
+                    "id": "hide_if_soldout_7",
+                    "label": "Hide if sold out",
+                    "default": false
+                },
+                {
+                    "type": "product",
+                    "id": "product_8",
+                    "label": "Add-on product 8"
+                },
+                {
+                    "type": "text",
+                    "id": "variant_id_8",
+                    "label": "Variant ID (optional)"
+                },
+                {
+                    "type": "text",
+                    "id": "label_override_8",
+                    "label": "Label override (optional)"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_price_8",
+                    "label": "Show price",
+                    "default": true
+                },
+                {
+                    "type": "checkbox",
+                    "id": "hide_if_soldout_8",
+                    "label": "Hide if sold out",
+                    "default": false
+                },
+                {
+                    "type": "product",
+                    "id": "product_9",
+                    "label": "Add-on product 9"
+                },
+                {
+                    "type": "text",
+                    "id": "variant_id_9",
+                    "label": "Variant ID (optional)"
+                },
+                {
+                    "type": "text",
+                    "id": "label_override_9",
+                    "label": "Label override (optional)"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_price_9",
+                    "label": "Show price",
+                    "default": true
+                },
+                {
+                    "type": "checkbox",
+                    "id": "hide_if_soldout_9",
+                    "label": "Hide if sold out",
+                    "default": false
+                },
+                {
+                    "type": "product",
+                    "id": "product_10",
+                    "label": "Add-on product 10"
+                },
+                {
+                    "type": "text",
+                    "id": "variant_id_10",
+                    "label": "Variant ID (optional)"
+                },
+                {
+                    "type": "text",
+                    "id": "label_override_10",
+                    "label": "Label override (optional)"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_price_10",
+                    "label": "Show price",
+                    "default": true
+                },
+                {
+                    "type": "checkbox",
+                    "id": "hide_if_soldout_10",
+                    "label": "Hide if sold out",
+                    "default": false
+                },
+                {
+                    "type": "header",
+                    "content": "t:sections.main-product.settings.general.spacing"
+                },
+                {
+                    "type": "range",
+                    "id": "spacing_top",
+                    "label": "t:sections.general.settings.aligmnent.options__5",
+                    "min": 0,
+                    "max": 100,
+                    "step": 1,
+                    "unit": "t:sections.layout.mg_desktop.unit",
+                    "default": 0
+                },
+                {
+                    "type": "range",
+                    "id": "spacing_bottom",
+                    "label": "t:sections.general.settings.aligmnent.options__6",
+                    "min": 0,
+                    "max": 100,
+                    "step": 1,
+                    "unit": "t:sections.layout.mg_desktop.unit",
+                    "default": 15
                 }
             ]
         },
